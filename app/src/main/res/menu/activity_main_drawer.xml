@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_profile"
+            android:title="Профиль" />
+        <item
+            android:id="@+id/nav_schedule"
+            android:title="Расписание" />
+        <item
+            android:id="@+id/nav_attestations"
+            android:title="Аттестации" />
+        <item
+            android:id="@+id/nav_disk"
+            android:title="Диск" />
+        <item
+            android:id="@+id/nav_portfolio"
+            android:title="Портфолио" />
+        <item
+            android:id="@+id/nav_search"
+            android:title="Поиск" />
+        <item
+            android:id="@+id/nav_bup"
+            android:title="Учебный план" />
+        <item
+            android:id="@+id/nav_rup"
+            android:title="Рабочий план" />
+
+        <item
+            android:id="@+id/nav_marks"
+            android:title="Оценки" />
+        <item
+            android:id="@+id/nav_orders"
+            android:title="Приказы" />
+
+        <item
+            android:id="@+id/nav_stipend"
+            android:title="Стипендия" />
+    </group>
+
+</menu>
