@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity
     private Fragment prevFragment;
     private AttestationsFragment attestationsFragment;
     private FragmentTransaction fragmentTransaction;
+    private ProfileFragment profileFragment;
 
 
 
@@ -68,7 +69,11 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_profile) {
-
+            if (prevFragment != profileFragment){
+                fragmentTransaction.add(R.id.frame_layout, profileFragment);
+                fragmentTransaction.remove(prevFragment);
+                prevFragment = profileFragment;
+            }
         } else if (id == R.id.nav_schedule) {
             if (prevFragment != scheduleFragment){
                 fragmentTransaction.add(R.id.frame_layout, scheduleFragment);
@@ -172,6 +177,7 @@ public class MainActivity extends AppCompatActivity
         scheduleFragment = new ScheduleFragment();
         prevFragment = scheduleFragment;
         attestationsFragment = new AttestationsFragment();
+        profileFragment = new ProfileFragment();
         fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.add(R.id.frame_layout, scheduleFragment);
         fragmentTransaction.commit();
