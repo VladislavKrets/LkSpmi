@@ -1,6 +1,7 @@
 package com.re.lkspmi;
 
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -42,22 +43,21 @@ public class AttestationsFragment extends Fragment {
             AttestationSemesterData[] data = new AttestationsTask().execute().get();
             TableLayout tableLayout = view.findViewById(R.id.table_attestations);
             TableRow row = new TableRow(getContext());
-            row.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            row.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT));
-            ViewGroup.LayoutParams layoutParams;
-            layoutParams = view.getLayoutParams();
-            layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
-            layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
 
             Resources r = getContext().getResources();
             float px = TypedValue.applyDimension(
                     TypedValue.COMPLEX_UNIT_DIP,
-                    12,
+                    6,
                     r.getDisplayMetrics()
             );
 
             LinearLayout linearLayout = new LinearLayout(getContext());
             linearLayout.setOrientation(LinearLayout.VERTICAL);
+            linearLayout.setPadding(20, 20, 20, 20);
             TextView textView = new TextView(getContext());
             textView.setGravity(Gravity.CENTER);
             view.setLayoutParams(layoutParams);
@@ -74,9 +74,15 @@ public class AttestationsFragment extends Fragment {
             if (currMonth < 6) start = 1;
             else start = 8;
 
-            for (int i = 1; i < 6; i++){
+            TableLayout.LayoutParams params = new TableLayout.LayoutParams();
+            params.topMargin = 20;
+            row.setLayoutParams(params);
+
+
+            for (int i = 1; i < 5; i++){
                 linearLayout = new LinearLayout(getContext());
                 linearLayout.setOrientation(LinearLayout.VERTICAL);
+                linearLayout.setPadding(20, 20, 20, 20);
                 textView = new TextView(getContext());
                 textView.setGravity(Gravity.CENTER);
                 view.setLayoutParams(layoutParams);
@@ -84,13 +90,18 @@ public class AttestationsFragment extends Fragment {
                 textView.setText(months[i + start - 1]);
                 linearLayout.addView(textView);
                 row.addView(linearLayout, i);
+
             }
+            row.setLayoutParams(params);
             tableLayout.addView(row);
+
+
 
 
             for (AttestationSemesterData semesterData : data){
                 row = new TableRow(getContext());
                 linearLayout = new LinearLayout(getContext());
+                linearLayout.setPadding(20, 20, 20, 20);
                 linearLayout.setOrientation(LinearLayout.VERTICAL);
                 textView = new TextView(getContext());
                 textView.setGravity(Gravity.CENTER);
@@ -100,9 +111,11 @@ public class AttestationsFragment extends Fragment {
                 linearLayout.addView(textView);
                 row.addView(linearLayout, 0);
 
+                int i = 1;
                 for (AttestationDisciplineData disciplineData : semesterData.getData()){
                     linearLayout = new LinearLayout(getContext());
                     linearLayout.setOrientation(LinearLayout.VERTICAL);
+                    linearLayout.setPadding(20, 20, 20, 20);
                     textView = new TextView(getContext());
                     textView.setGravity(Gravity.CENTER);
                     view.setLayoutParams(layoutParams);
@@ -114,10 +127,20 @@ public class AttestationsFragment extends Fragment {
                     textView.setGravity(Gravity.CENTER);
                     view.setLayoutParams(layoutParams);
                     textView.setTextSize(px);
-                    textView.setText(disciplineData.getResult() == 0 ? "Неаттестация" : "Аттестация");
+                    if(disciplineData.getResult() == 0){
+                        textView.setText("Неаттестация");
+                        textView.setTextColor(Color.RED);
+                    }
+                    else {
+                        textView.setText("Аттестация");
+                        textView.setTextColor(Color.GREEN);
+                    }
                     linearLayout.addView(textView);
-                    row.addView(linearLayout, disciplineData.getMonth() + 1);
+                    row.addView(linearLayout, i);
+                    i++;
                 }
+                row.setLayoutParams(params);
+                tableLayout.addView(row);
             }
 
 

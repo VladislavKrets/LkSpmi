@@ -71,12 +71,14 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_schedule) {
             if (prevFragment != scheduleFragment){
-                fragmentTransaction.add(scheduleFragment, "schedule");
+                fragmentTransaction.add(R.id.frame_layout, scheduleFragment);
+                fragmentTransaction.remove(prevFragment);
                 prevFragment = scheduleFragment;
             }
         } else if (id == R.id.nav_attestations) {
             if (prevFragment != attestationsFragment){
-                fragmentTransaction.add(attestationsFragment, "attestations");
+                fragmentTransaction.add(R.id.frame_layout, attestationsFragment);
+                fragmentTransaction.remove(prevFragment);
                 prevFragment = attestationsFragment;
             }
         } else if (id == R.id.nav_disk) {
