@@ -52,6 +52,8 @@ public class MainActivity extends AppCompatActivity
     private BupFragment bupFragment;
     private RupFragment rupFragment;
     private MarksFragment marksFragment;
+    private OrdersFragment ordersFragment;
+    private StipendFragment stipendFragment;
 
 
 
@@ -114,9 +116,17 @@ public class MainActivity extends AppCompatActivity
                 prevFragment = marksFragment;
             }
         } else if (id == R.id.nav_orders) {
-
+            if (prevFragment != ordersFragment){
+                fragmentTransaction.add(R.id.frame_layout, ordersFragment);
+                fragmentTransaction.remove(prevFragment);
+                prevFragment = ordersFragment;
+            }
         } else if (id == R.id.nav_stipend) {
-
+            if (prevFragment != stipendFragment){
+                fragmentTransaction.add(R.id.frame_layout, stipendFragment);
+                fragmentTransaction.remove(prevFragment);
+                prevFragment = stipendFragment;
+            }
         }
 
         fragmentTransaction.commit();
@@ -197,6 +207,8 @@ public class MainActivity extends AppCompatActivity
         bupFragment = new BupFragment();
         rupFragment = new RupFragment();
         marksFragment = new MarksFragment();
+        ordersFragment = new OrdersFragment();
+        stipendFragment = new StipendFragment();
         fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.add(R.id.frame_layout, scheduleFragment);
         fragmentTransaction.commit();

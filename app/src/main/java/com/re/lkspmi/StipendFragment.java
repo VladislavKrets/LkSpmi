@@ -20,18 +20,21 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import ru.spmi.lk.entities.orders.Order;
+import ru.spmi.lk.entities.stipend.Stipend;
 
-public class OrdersFragment extends Fragment {
+public class StipendFragment extends Fragment {
+
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.orders_fragment, null);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.stipend_fragment, null);
 
         try {
-            List<Order> orders = new OrdersTask().execute().get();
-            if (orders != null){
-                TableLayout tableLayout = view.findViewById(R.id.table_orders);
+            List<Stipend> stipends = new StipendTask().execute().get();
+            if (stipends != null){
+
+                TableLayout tableLayout = view.findViewById(R.id.table_stipends);
                 TableRow row = new TableRow(getContext());
                 row.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -44,20 +47,20 @@ public class OrdersFragment extends Fragment {
                         6,
                         r.getDisplayMetrics()
                 );
-                String[] lines = new String[] {"Дата", "Номер", "Название", "Дата действия", "Описание"};
+                String[] lines = new String[] {"Вид стипендии", "Приказ", "Дата начала", "Дата окончания", "Сумма"};
 
                 for (String s : lines){
                     addRowItem(row, layoutParams, px, s);
                 }
                 tableLayout.addView(row);
 
-                for (Order order : orders){
+                for (Stipend stipend : stipends) {
                     row = new TableRow(getContext());
-                    addRowItem(row, layoutParams, px, order.getDate());
-                    addRowItem(row, layoutParams, px, order.getNumber());
-                    addRowItem(row, layoutParams, px, order.getTitle() == null ? "" : order.getTitle());
-                    addRowItem(row, layoutParams, px, order.getDate_approve() == null ? "" : order.getDate_approve());
-                    addRowItem(row, layoutParams, px, order.getAction());
+                    addRowItem(row, layoutParams, px, stipend.getType());
+                    addRowItem(row, layoutParams, px, stipend.getOrder());
+                    addRowItem(row, layoutParams, px, stipend.getDateBegin());
+                    addRowItem(row, layoutParams, px, stipend.getDateEnd());
+                    addRowItem(row, layoutParams, px, String.valueOf(stipend.getSum()));
                     tableLayout.addView(row);
                 }
 
@@ -86,13 +89,13 @@ public class OrdersFragment extends Fragment {
         row.addView(linearLayout);
     }
 
-    class OrdersTask extends AsyncTask<Void, Void, List<Order>>{
+    class StipendTask extends AsyncTask<Void, Void, List<Stipend>>{
 
         @Override
-        protected List<Order> doInBackground(Void... voids) {
+        protected List<Stipend> doInBackground(Void... voids) {
             try {
-                List<Order> orders = LkSingleton.getInstance().getLkSpmi().getOrders();
-                return orders;
+                List<Stipend> stipends = LkSingleton.getInstance().getLkSpmi().getStipend();
+                return stipends;
             } catch (IOException e) {
                 e.printStackTrace();
             }
