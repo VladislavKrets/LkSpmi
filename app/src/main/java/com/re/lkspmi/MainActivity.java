@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity
     private ProfileFragment profileFragment;
     private BupFragment bupFragment;
     private RupFragment rupFragment;
+    private MarksFragment marksFragment;
 
 
 
@@ -107,7 +108,11 @@ public class MainActivity extends AppCompatActivity
                 prevFragment = rupFragment;
             }
         } else if (id == R.id.nav_marks) {
-
+            if (prevFragment != marksFragment){
+                fragmentTransaction.add(R.id.frame_layout, marksFragment);
+                fragmentTransaction.remove(prevFragment);
+                prevFragment = marksFragment;
+            }
         } else if (id == R.id.nav_orders) {
 
         } else if (id == R.id.nav_stipend) {
@@ -117,6 +122,7 @@ public class MainActivity extends AppCompatActivity
         fragmentTransaction.commit();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+
         return true;
     }
 
@@ -190,6 +196,7 @@ public class MainActivity extends AppCompatActivity
         profileFragment = new ProfileFragment();
         bupFragment = new BupFragment();
         rupFragment = new RupFragment();
+        marksFragment = new MarksFragment();
         fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.add(R.id.frame_layout, scheduleFragment);
         fragmentTransaction.commit();
