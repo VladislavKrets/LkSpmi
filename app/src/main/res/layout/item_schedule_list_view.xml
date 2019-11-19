@@ -59,5 +59,23 @@
         android:gravity="center"
         android:textSize="15dp"
         android:id="@+id/nineth_field"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="15dp"
+        android:id="@+id/tenth_field"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="15dp"
+        android:id="@+id/eleventh_field"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="15dp"
+        android:id="@+id/twelth_field"/>
 
 </LinearLayout>

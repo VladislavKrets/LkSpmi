@@ -107,6 +107,7 @@ public class AttestationsFragment extends Fragment {
                 textView.setGravity(Gravity.CENTER);
                 view.setLayoutParams(layoutParams);
                 textView.setTextSize(px);
+                textView.setMaxWidth(500);
                 textView.setText(semesterData.getDiscipline());
                 linearLayout.addView(textView);
                 row.addView(linearLayout, 0);

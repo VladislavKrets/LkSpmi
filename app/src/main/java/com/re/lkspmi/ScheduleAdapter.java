@@ -98,38 +98,49 @@ public class ScheduleAdapter extends BaseAdapter {
         textView = view.findViewById(R.id.second_field);
         textView.setText(schedules.get(0).getDiscipline());
         textView = view.findViewById(R.id.third_field);
-        textView.setText(schedules.get(0).getAuditorium() + ", " + schedules.get(0).getLecturer());
+        textView.setText(schedules.get(0).getAuditorium() + ", " + schedules.get(0).getBuilding() + ", " + schedules.get(0).getLecturer());
+        textView = view.findViewById(R.id.fourth_field);
+        textView.setText(schedules.get(0).getKindOfWork());
+
 
         if (schedules.size() > 1){
-            textView = view.findViewById(R.id.fourth_field);
-            textView.setText("или");
             textView = view.findViewById(R.id.fifth_field);
-            textView.setText(schedules.get(1).getDiscipline());
+            textView.setText("или");
             textView = view.findViewById(R.id.sixth_field);
-            textView.setText(schedules.get(1).getAuditorium() + ", " + schedules.get(1).getLecturer());
+            textView.setText(schedules.get(1).getDiscipline());
+            textView = view.findViewById(R.id.seventh_field);
+            textView.setText(schedules.get(1).getAuditorium() + ", " + schedules.get(1).getBuilding() + ", " + schedules.get(1).getLecturer());
+            textView = view.findViewById(R.id.eighth_field);
+            textView.setText(schedules.get(1).getKindOfWork());
         }
         else {
-            textView = view.findViewById(R.id.fourth_field);
-            textView.setText("");
             textView = view.findViewById(R.id.fifth_field);
             textView.setText("");
             textView = view.findViewById(R.id.sixth_field);
+            textView.setText("");
+            textView = view.findViewById(R.id.seventh_field);
+            textView.setText("");
+            textView = view.findViewById(R.id.eighth_field);
             textView.setText("");
         }
         if (schedules.size() > 2){
-            textView = view.findViewById(R.id.seventh_field);
-            textView.setText("или");
-            textView = view.findViewById(R.id.eighth_field);
-            textView.setText(schedules.get(2).getDiscipline());
             textView = view.findViewById(R.id.nineth_field);
-            textView.setText(schedules.get(2).getAuditorium() + ", " + schedules.get(2).getLecturer());
+            textView.setText("или");
+            textView = view.findViewById(R.id.tenth_field);
+            textView.setText(schedules.get(2).getDiscipline());
+            textView = view.findViewById(R.id.eleventh_field);
+            textView.setText(schedules.get(2).getAuditorium() + ", " + schedules.get(2).getBuilding() + ", "  + schedules.get(2).getLecturer());
+            textView = view.findViewById(R.id.twelth_field);
+            textView.setText(schedules.get(2).getKindOfWork());
         }
         else {
-            textView = view.findViewById(R.id.seventh_field);
-            textView.setText("");
-            textView = view.findViewById(R.id.eighth_field);
-            textView.setText("");
             textView = view.findViewById(R.id.nineth_field);
+            textView.setText("");
+            textView = view.findViewById(R.id.tenth_field);
+            textView.setText("");
+            textView = view.findViewById(R.id.eleventh_field);
+            textView.setText("");
+            textView = view.findViewById(R.id.twelth_field);
             textView.setText("");
         }
 

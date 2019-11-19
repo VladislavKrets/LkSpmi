@@ -49,6 +49,8 @@ public class MainActivity extends AppCompatActivity
     private AttestationsFragment attestationsFragment;
     private FragmentTransaction fragmentTransaction;
     private ProfileFragment profileFragment;
+    private BupFragment bupFragment;
+    private RupFragment rupFragment;
 
 
 
@@ -93,9 +95,17 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_search) {
 
         } else if (id == R.id.nav_bup) {
-
+            if (prevFragment != bupFragment){
+                fragmentTransaction.add(R.id.frame_layout, bupFragment);
+                fragmentTransaction.remove(prevFragment);
+                prevFragment = bupFragment;
+            }
         } else if (id == R.id.nav_rup) {
-
+            if (prevFragment != rupFragment){
+                fragmentTransaction.add(R.id.frame_layout, rupFragment);
+                fragmentTransaction.remove(prevFragment);
+                prevFragment = rupFragment;
+            }
         } else if (id == R.id.nav_marks) {
 
         } else if (id == R.id.nav_orders) {
@@ -178,6 +188,8 @@ public class MainActivity extends AppCompatActivity
         prevFragment = scheduleFragment;
         attestationsFragment = new AttestationsFragment();
         profileFragment = new ProfileFragment();
+        bupFragment = new BupFragment();
+        rupFragment = new RupFragment();
         fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.add(R.id.frame_layout, scheduleFragment);
         fragmentTransaction.commit();
@@ -230,7 +242,15 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_exit) {
+            SharedPreferences sPref = getSharedPreferences("preferences", MODE_PRIVATE);
+            SharedPreferences.Editor ed = sPref.edit();
+            ed.putString("login", "");
+            ed.putString("password", "");
+            ed.apply();
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
             return true;
         }
 
