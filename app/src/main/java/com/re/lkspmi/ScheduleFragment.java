@@ -1,17 +1,21 @@
 package com.re.lkspmi;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -38,12 +42,13 @@ public class ScheduleFragment extends Fragment {
     private Date date;
     private EditText dateEditText;
     private Button setDateEditText;
-
+    private View view;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.schedule_fragment, null);
+        this.view = view;
         scheduleListView = view.findViewById(R.id.schedule_list_view);
         dateEditText = view.findViewById(R.id.dateEditText);
         setDateEditText = view.findViewById(R.id.setDateEditText);
@@ -51,9 +56,11 @@ public class ScheduleFragment extends Fragment {
         dateFormat = new SimpleDateFormat("yyyy.MM.dd");
         date = new Date(System.currentTimeMillis());
         dateEditText.setText(dateFormat.format(date));
-
         final GregorianCalendar calendar = new GregorianCalendar();
         calendar.setTime(date);
+        int inType = dateEditText.getInputType();
+        dateEditText.setInputType(InputType.TYPE_NULL);
+
         setDateEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,11 +79,20 @@ public class ScheduleFragment extends Fragment {
             }
         });
 
-
-
-
         startTask();
+
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        hideKeyboard();
+    }
+
+    private void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
     }
 
     private void startTask() {
@@ -124,3 +140,4 @@ public class ScheduleFragment extends Fragment {
     }
 
 }
+

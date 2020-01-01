@@ -19,6 +19,7 @@
             android:paddingRight="10px"
             android:gravity="center"
             android:enabled="false"
+            android:inputType="none"
             android:text="1970.01.01"/>
         <Button
             android:id="@+id/setDateEditText"

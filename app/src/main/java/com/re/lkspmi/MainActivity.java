@@ -1,6 +1,7 @@
 package com.re.lkspmi;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -27,6 +28,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -40,6 +42,7 @@ import java.util.concurrent.ExecutionException;
 
 import ru.spmi.lk.authorization.LkSpmi;
 import ru.spmi.lk.entities.profile.ProfileCurrent;
+
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -62,8 +65,16 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         checkLogin();
+        hideKeyboard(this);
+    }
 
-
+    public static void hideKeyboard(Activity activity){
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(INPUT_METHOD_SERVICE);
+        View view = activity.getCurrentFocus();
+        if (view == null){
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
