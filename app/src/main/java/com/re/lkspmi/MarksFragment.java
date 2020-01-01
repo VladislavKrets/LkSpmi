@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
@@ -35,40 +36,34 @@ import ru.spmi.lk.entities.marks.Mark2SemesterData;
 import ru.spmi.lk.entities.rup.RupSemester;
 
 public class MarksFragment extends Fragment {
-
+    private View view;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.marks_fragment, null);
-
-        try {
-            List<Mark2> marks = new MarksTask().execute().get();
-            LinearLayout linearLayout = view.findViewById(R.id.marks_container);
-            ExpansionHeader expansionHeader;
-            ExpansionLayout expansionLayout;
-            if (marks != null){
-                for (Mark2 mark : marks){
-
-                    for (Mark2Semester semester : mark.getSemesters()){
-                        expansionHeader = createExpansionHeader(String.valueOf(mark.getYear())
-                                + "/" + String.valueOf(mark.getYear() + 1) + " " + semester.getSemester() + " семестр");
-                        expansionLayout = createExpansionLayout(semester);
-                        linearLayout.addView(expansionHeader);
-                        linearLayout.addView(expansionLayout);
-                        expansionHeader.setExpansionLayout(expansionLayout);
-                    }
-
-                }
-            }
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        view = inflater.inflate(R.layout.marks_fragment, null);
+        new MarksTask().execute();
         return view;
     }
+    private void initialize(List<Mark2> marks){
+        LinearLayout linearLayout = view.findViewById(R.id.marks_container);
+        ExpansionHeader expansionHeader;
+        ExpansionLayout expansionLayout;
+        if (marks != null){
+            for (Mark2 mark : marks){
 
+                for (Mark2Semester semester : mark.getSemesters()){
+                    expansionHeader = createExpansionHeader(String.valueOf(mark.getYear())
+                            + "/" + String.valueOf(mark.getYear() + 1) + " " + semester.getSemester() + " семестр");
+                    expansionLayout = createExpansionLayout(semester);
+                    linearLayout.addView(expansionHeader);
+                    linearLayout.addView(expansionLayout);
+                    expansionHeader.setExpansionLayout(expansionLayout);
+                }
+
+            }
+        }
+    }
     private ExpansionLayout createExpansionLayout(Mark2Semester semester) {
         final ExpansionLayout expansionLayout = new ExpansionLayout(getContext());
         ScrollView scrollView = new ScrollView(getContext());
@@ -175,7 +170,25 @@ public class MarksFragment extends Fragment {
     }
 
     class MarksTask extends AsyncTask<Void, Void, List<Mark2>>{
+        ProgressBar progressBar;
+        RelativeLayout relativeLayout;
 
+        @Override
+        protected void onPreExecute() {
+            LinearLayout linearLayout = view.findViewById(R.id.marks_layout);
+            relativeLayout = new RelativeLayout(getContext());
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
+                    RelativeLayout.LayoutParams.MATCH_PARENT);
+            relativeLayout.setLayoutParams(params);
+            linearLayout.addView(relativeLayout);
+            progressBar = new ProgressBar(getActivity(), null, android.R.attr.progressBarStyleLarge);
+            params = new RelativeLayout.LayoutParams(300, 300);
+            params.addRule(RelativeLayout.CENTER_IN_PARENT);
+            relativeLayout.addView(progressBar, params);
+
+            relativeLayout.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
+        }
         @Override
         protected List<Mark2> doInBackground(Void... voids) {
             try {
@@ -185,6 +198,14 @@ public class MarksFragment extends Fragment {
                 e.printStackTrace();
             }
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(List<Mark2> marks) {
+            relativeLayout.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
+            if (marks != null)
+            initialize(marks);
         }
     }
 }

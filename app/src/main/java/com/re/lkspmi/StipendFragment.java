@@ -12,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -23,57 +25,52 @@ import java.util.concurrent.ExecutionException;
 import ru.spmi.lk.entities.stipend.Stipend;
 
 public class StipendFragment extends Fragment {
-
+    private View view;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.stipend_fragment, null);
+        view = inflater.inflate(R.layout.stipend_fragment, null);
 
-        try {
-            List<Stipend> stipends = new StipendTask().execute().get();
-            if (stipends != null){
-
-                TableLayout tableLayout = view.findViewById(R.id.table_stipends);
-                TableRow row = new TableRow(getContext());
-                row.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT));
-                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT);
-
-                Resources r = getContext().getResources();
-                float px = TypedValue.applyDimension(
-                        TypedValue.COMPLEX_UNIT_DIP,
-                        6,
-                        r.getDisplayMetrics()
-                );
-                String[] lines = new String[] {"Вид стипендии", "Приказ", "Дата начала", "Дата окончания", "Сумма"};
-
-                for (String s : lines){
-                    addRowItem(row, layoutParams, px, s);
-                }
-                tableLayout.addView(row);
-
-                for (Stipend stipend : stipends) {
-                    row = new TableRow(getContext());
-                    addRowItem(row, layoutParams, px, stipend.getType());
-                    addRowItem(row, layoutParams, px, stipend.getOrder());
-                    addRowItem(row, layoutParams, px, stipend.getDateBegin());
-                    addRowItem(row, layoutParams, px, stipend.getDateEnd());
-                    addRowItem(row, layoutParams, px, String.valueOf(stipend.getSum()));
-                    tableLayout.addView(row);
-                }
-
-            }
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        new StipendTask().execute();
 
         return view;
     }
+    private void initialize(List<Stipend> stipends){
+        if (stipends != null){
 
+            TableLayout tableLayout = view.findViewById(R.id.table_stipends);
+            TableRow row = new TableRow(getContext());
+            row.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT));
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+
+            Resources r = getContext().getResources();
+            float px = TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    6,
+                    r.getDisplayMetrics()
+            );
+            String[] lines = new String[] {"Вид стипендии", "Приказ", "Дата начала", "Дата окончания", "Сумма"};
+
+            for (String s : lines){
+                addRowItem(row, layoutParams, px, s);
+            }
+            tableLayout.addView(row);
+
+            for (Stipend stipend : stipends) {
+                row = new TableRow(getContext());
+                addRowItem(row, layoutParams, px, stipend.getType());
+                addRowItem(row, layoutParams, px, stipend.getOrder());
+                addRowItem(row, layoutParams, px, stipend.getDateBegin());
+                addRowItem(row, layoutParams, px, stipend.getDateEnd());
+                addRowItem(row, layoutParams, px, String.valueOf(stipend.getSum()));
+                tableLayout.addView(row);
+            }
+
+        }
+    }
     private void addRowItem(TableRow row, LinearLayout.LayoutParams layoutParams, float px, String s) {
         LinearLayout linearLayout;
         TextView textView;
@@ -90,6 +87,25 @@ public class StipendFragment extends Fragment {
     }
 
     class StipendTask extends AsyncTask<Void, Void, List<Stipend>>{
+        ProgressBar progressBar;
+        RelativeLayout relativeLayout;
+
+        @Override
+        protected void onPreExecute() {
+            LinearLayout linearLayout = view.findViewById(R.id.stipend_layout);
+            relativeLayout = new RelativeLayout(getContext());
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
+                    RelativeLayout.LayoutParams.MATCH_PARENT);
+            relativeLayout.setLayoutParams(params);
+            linearLayout.addView(relativeLayout);
+            progressBar = new ProgressBar(getActivity(), null, android.R.attr.progressBarStyleLarge);
+            params = new RelativeLayout.LayoutParams(300, 300);
+            params.addRule(RelativeLayout.CENTER_IN_PARENT);
+            relativeLayout.addView(progressBar, params);
+
+            relativeLayout.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
+        }
 
         @Override
         protected List<Stipend> doInBackground(Void... voids) {
@@ -100,6 +116,14 @@ public class StipendFragment extends Fragment {
                 e.printStackTrace();
             }
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(List<Stipend> stipends) {
+            relativeLayout.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
+            if (stipends != null)
+                initialize(stipends);
         }
     }
 }

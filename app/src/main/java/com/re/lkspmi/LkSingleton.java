@@ -7,6 +7,7 @@ public class LkSingleton {
     private LkSpmi lkSpmi;
     private ProfileCurrent profileCurrent;
     private static LkSingleton instance;
+    private boolean isLoaded = false;
 
     private LkSingleton(){}
 
@@ -29,5 +30,13 @@ public class LkSingleton {
 
     public void setProfileCurrent(ProfileCurrent profileCurrent) {
         this.profileCurrent = profileCurrent;
+    }
+
+    public boolean isLoaded() {
+        return isLoaded;
+    }
+
+    public void setLoaded(boolean loaded) {
+        isLoaded = loaded;
     }
 }

@@ -12,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -23,54 +25,48 @@ import java.util.concurrent.ExecutionException;
 import ru.spmi.lk.entities.orders.Order;
 
 public class OrdersFragment extends Fragment {
+    private View view;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.orders_fragment, null);
-
-        try {
-            List<Order> orders = new OrdersTask().execute().get();
-            if (orders != null){
-                TableLayout tableLayout = view.findViewById(R.id.table_orders);
-                TableRow row = new TableRow(getContext());
-                row.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT));
-                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT);
-
-                Resources r = getContext().getResources();
-                float px = TypedValue.applyDimension(
-                        TypedValue.COMPLEX_UNIT_DIP,
-                        6,
-                        r.getDisplayMetrics()
-                );
-                String[] lines = new String[] {"Дата", "Номер", "Название", "Дата действия", "Описание"};
-
-                for (String s : lines){
-                    addRowItem(row, layoutParams, px, s);
-                }
-                tableLayout.addView(row);
-
-                for (Order order : orders){
-                    row = new TableRow(getContext());
-                    addRowItem(row, layoutParams, px, order.getDate());
-                    addRowItem(row, layoutParams, px, order.getNumber());
-                    addRowItem(row, layoutParams, px, order.getTitle() == null ? "" : order.getTitle());
-                    addRowItem(row, layoutParams, px, order.getDate_approve() == null ? "" : order.getDate_approve());
-                    addRowItem(row, layoutParams, px, order.getAction());
-                    tableLayout.addView(row);
-                }
-
-            }
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
+        view = inflater.inflate(R.layout.orders_fragment, null);
+        new OrdersTask().execute();
         return view;
     }
+    private void initialize(List<Order> orders){
+        if (orders != null){
+            TableLayout tableLayout = view.findViewById(R.id.table_orders);
+            TableRow row = new TableRow(getContext());
+            row.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT));
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
 
+            Resources r = getContext().getResources();
+            float px = TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    6,
+                    r.getDisplayMetrics()
+            );
+            String[] lines = new String[] {"Дата", "Номер", "Название", "Дата действия", "Описание"};
+
+            for (String s : lines){
+                addRowItem(row, layoutParams, px, s);
+            }
+            tableLayout.addView(row);
+
+            for (Order order : orders){
+                row = new TableRow(getContext());
+                addRowItem(row, layoutParams, px, order.getDate());
+                addRowItem(row, layoutParams, px, order.getNumber());
+                addRowItem(row, layoutParams, px, order.getTitle() == null ? "" : order.getTitle());
+                addRowItem(row, layoutParams, px, order.getDate_approve() == null ? "" : order.getDate_approve());
+                addRowItem(row, layoutParams, px, order.getAction());
+                tableLayout.addView(row);
+            }
+
+        }
+    }
     private void addRowItem(TableRow row, LinearLayout.LayoutParams layoutParams, float px, String s) {
         LinearLayout linearLayout;
         TextView textView;
@@ -87,7 +83,24 @@ public class OrdersFragment extends Fragment {
     }
 
     class OrdersTask extends AsyncTask<Void, Void, List<Order>>{
+        ProgressBar progressBar;
+        RelativeLayout relativeLayout;
+        @Override
+        protected void onPreExecute() {
+            LinearLayout linearLayout = view.findViewById(R.id.orders_layout);
+            relativeLayout = new RelativeLayout(getContext());
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
+                    RelativeLayout.LayoutParams.MATCH_PARENT);
+            relativeLayout.setLayoutParams(params);
+            linearLayout.addView(relativeLayout);
+            progressBar = new ProgressBar(getActivity(), null, android.R.attr.progressBarStyleLarge);
+            params = new RelativeLayout.LayoutParams(300, 300);
+            params.addRule(RelativeLayout.CENTER_IN_PARENT);
+            relativeLayout.addView(progressBar, params);
 
+            relativeLayout.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
+        }
         @Override
         protected List<Order> doInBackground(Void... voids) {
             try {
@@ -97,6 +110,14 @@ public class OrdersFragment extends Fragment {
                 e.printStackTrace();
             }
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(List<Order> orders) {
+            relativeLayout.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
+            if (orders != null)
+                initialize(orders);
         }
     }
 }

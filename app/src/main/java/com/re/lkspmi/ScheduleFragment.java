@@ -19,7 +19,10 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -36,13 +39,13 @@ import ru.spmi.lk.entities.schedule.ScheduleGroup;
 public class ScheduleFragment extends Fragment {
 
     private SimpleDateFormat dateFormat;
-    private List<Schedule> schedules;
     private ListView scheduleListView;
     private ScheduleAdapter scheduleAdapter;
     private Date date;
     private EditText dateEditText;
     private Button setDateEditText;
     private View view;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -96,20 +99,30 @@ public class ScheduleFragment extends Fragment {
     }
 
     private void startTask() {
-        try {
-            schedules = new ScheduleTask().execute().get();
-            if (schedules != null) {
-                scheduleAdapter = new ScheduleAdapter(this.getContext(), schedules);
-                scheduleListView.setAdapter(scheduleAdapter);
-            }
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        new ScheduleTask().execute();
+
     }
 
     class ScheduleTask extends AsyncTask<Void, Void, List<Schedule>> {
+        ProgressBar progressBar;
+        RelativeLayout relativeLayout;
+
+        @Override
+        protected void onPreExecute() {
+            LinearLayout linearLayout = view.findViewById(R.id.schedule_layout);
+            relativeLayout = new RelativeLayout(getContext());
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
+                    RelativeLayout.LayoutParams.MATCH_PARENT);
+            relativeLayout.setLayoutParams(params);
+            linearLayout.addView(relativeLayout);
+            progressBar = new ProgressBar(getActivity(), null, android.R.attr.progressBarStyleLarge);
+            params = new RelativeLayout.LayoutParams(300, 300);
+            params.addRule(RelativeLayout.CENTER_IN_PARENT);
+            relativeLayout.addView(progressBar, params);
+
+            relativeLayout.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
+        }
 
         @Override
         protected List<Schedule> doInBackground(Void... voids) {
@@ -137,7 +150,18 @@ public class ScheduleFragment extends Fragment {
             while (!isCancelled());
             return null;
         }
+
+        @Override
+        protected void onPostExecute(List<Schedule> schedules) {
+            relativeLayout.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
+            if (schedules != null) {
+                scheduleAdapter = new ScheduleAdapter(ScheduleFragment.this.getContext(), schedules);
+                scheduleListView.setAdapter(scheduleAdapter);
+            }
+        }
     }
+
 
 }
 
