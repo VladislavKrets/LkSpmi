@@ -71,7 +71,7 @@ public class AttestationsFragment extends Fragment {
             int currMonth = Calendar.getInstance().get(Calendar.MONTH);
             int start = 0;
 
-            if (currMonth < 6) start = 1;
+            if (LkSingleton.getInstance().getProfileCurrent().getEduSemester() == 2) start = 1;
             else start = 8;
 
             TableLayout.LayoutParams params = new TableLayout.LayoutParams();

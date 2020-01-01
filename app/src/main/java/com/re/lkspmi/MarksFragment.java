@@ -132,7 +132,7 @@ public class MarksFragment extends Fragment {
 
     private ExpansionHeader createExpansionHeader(String text) {
         final ExpansionHeader expansionHeader = new ExpansionHeader(getContext());
-        expansionHeader.setBackgroundColor(Color.BLUE);
+        expansionHeader.setBackgroundColor(Color.rgb(89, 181, 201));
 
         expansionHeader.setPadding(dpToPx(16), dpToPx(8), dpToPx(16), dpToPx(8));
 
@@ -150,7 +150,7 @@ public class MarksFragment extends Fragment {
         textView.setTextSize(px);
         textView.setText(text);
         textView.setGravity(Gravity.CENTER);
-        textView.setTextColor(Color.WHITE);
+        textView.setTextColor(Color.rgb(223, 241, 245));
 
         final ImageView expansionIndicator = new AppCompatImageView(getContext());
         expansionIndicator.setImageResource(R.drawable.ic_expansion_header_indicator_grey_24dp);

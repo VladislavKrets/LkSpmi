@@ -118,7 +118,8 @@ public class RupFragment extends Fragment {
                                 .append(term.getKr().toString()).append("], ");
                         if (term.getKp() != null) examBuilder.append("Курсовой проект[")
                                 .append(term.getKp().toString()).append("], ");
-                        addRowItem(row, layoutParams, px, examBuilder.substring(0, examBuilder.length() - 2));
+                        addRowItem(row, layoutParams, px, examBuilder.substring(0,
+                                examBuilder.length() - 2 > 0 ? examBuilder.length() - 2 : 0));
                         break;
                     }
                 }
@@ -144,7 +145,7 @@ public class RupFragment extends Fragment {
     }
     private ExpansionHeader createExpansionHeader(String text) {
         final ExpansionHeader expansionHeader = new ExpansionHeader(getContext());
-        expansionHeader.setBackgroundColor(Color.BLUE);
+        expansionHeader.setBackgroundColor(Color.rgb(89, 181, 201));
 
         expansionHeader.setPadding(dpToPx(16), dpToPx(8), dpToPx(16), dpToPx(8));
 
@@ -162,7 +163,7 @@ public class RupFragment extends Fragment {
         textView.setTextSize(px);
         textView.setText(text);
         textView.setGravity(Gravity.CENTER);
-        textView.setTextColor(Color.WHITE);
+        textView.setTextColor(Color.rgb(223, 241, 245));
 
         final ImageView expansionIndicator = new AppCompatImageView(getContext());
         expansionIndicator.setImageResource(R.drawable.ic_expansion_header_indicator_grey_24dp);
