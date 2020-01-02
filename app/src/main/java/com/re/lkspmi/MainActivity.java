@@ -31,6 +31,7 @@ import android.view.MenuItem;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.File;
@@ -59,7 +60,6 @@ public class MainActivity extends AppCompatActivity
     private StipendFragment stipendFragment;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,10 +68,10 @@ public class MainActivity extends AppCompatActivity
         hideKeyboard(this);
     }
 
-    public static void hideKeyboard(Activity activity){
+    public static void hideKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(INPUT_METHOD_SERVICE);
         View view = activity.getCurrentFocus();
-        if (view == null){
+        if (view == null) {
             view = new View(activity);
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
@@ -85,19 +85,19 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_profile) {
-            if (prevFragment != profileFragment){
+            if (prevFragment != profileFragment) {
                 fragmentTransaction.add(R.id.frame_layout, profileFragment);
                 fragmentTransaction.remove(prevFragment);
                 prevFragment = profileFragment;
             }
         } else if (id == R.id.nav_schedule) {
-            if (prevFragment != scheduleFragment){
+            if (prevFragment != scheduleFragment) {
                 fragmentTransaction.add(R.id.frame_layout, scheduleFragment);
                 fragmentTransaction.remove(prevFragment);
                 prevFragment = scheduleFragment;
             }
         } else if (id == R.id.nav_attestations) {
-            if (prevFragment != attestationsFragment){
+            if (prevFragment != attestationsFragment) {
                 fragmentTransaction.add(R.id.frame_layout, attestationsFragment);
                 fragmentTransaction.remove(prevFragment);
                 prevFragment = attestationsFragment;
@@ -109,31 +109,31 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_search) {
 
         } else if (id == R.id.nav_bup) {
-            if (prevFragment != bupFragment){
+            if (prevFragment != bupFragment) {
                 fragmentTransaction.add(R.id.frame_layout, bupFragment);
                 fragmentTransaction.remove(prevFragment);
                 prevFragment = bupFragment;
             }
         } else if (id == R.id.nav_rup) {
-            if (prevFragment != rupFragment){
+            if (prevFragment != rupFragment) {
                 fragmentTransaction.add(R.id.frame_layout, rupFragment);
                 fragmentTransaction.remove(prevFragment);
                 prevFragment = rupFragment;
             }
         } else if (id == R.id.nav_marks) {
-            if (prevFragment != marksFragment){
+            if (prevFragment != marksFragment) {
                 fragmentTransaction.add(R.id.frame_layout, marksFragment);
                 fragmentTransaction.remove(prevFragment);
                 prevFragment = marksFragment;
             }
         } else if (id == R.id.nav_orders) {
-            if (prevFragment != ordersFragment){
+            if (prevFragment != ordersFragment) {
                 fragmentTransaction.add(R.id.frame_layout, ordersFragment);
                 fragmentTransaction.remove(prevFragment);
                 prevFragment = ordersFragment;
             }
         } else if (id == R.id.nav_stipend) {
-            if (prevFragment != stipendFragment){
+            if (prevFragment != stipendFragment) {
                 fragmentTransaction.add(R.id.frame_layout, stipendFragment);
                 fragmentTransaction.remove(prevFragment);
                 prevFragment = stipendFragment;
@@ -152,8 +152,8 @@ public class MainActivity extends AppCompatActivity
             int permissionStatus = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
 
             if (permissionStatus != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
             }
         }
     }
@@ -162,33 +162,40 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences sPref = getSharedPreferences("preferences", MODE_PRIVATE);
         String login = sPref.getString("login", "");
         String password = sPref.getString("password", "");
-
-        if(login == null || password == null || login.isEmpty() || password.isEmpty()){
+        setContentView(R.layout.activity_main);
+        LinearLayout linearLayout = findViewById(R.id.main_layout);
+        final LinearLayout mainContent = findViewById(R.id.main_content);
+        mainContent.setVisibility(View.GONE);
+        if (login == null || password == null || login.isEmpty() || password.isEmpty()) {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             finish();
-        }
-        else {
-            if (LkSingleton.getInstance().getLkSpmi() == null){
-                try {
-                    LkSpmi lkSpmi = new LoginTask(login, password).execute().get();
-                    LkSingleton.getInstance().setLkSpmi(lkSpmi);
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                    Intent intent = new Intent(this, LoginActivity.class);
-                    startActivity(intent);
-                    finish();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    Intent intent = new Intent(this, LoginActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
+        } else {
+            if (LkSingleton.getInstance().getLkSpmi() == null) {
+
+                new LoginTask(login, password,
+                        linearLayout, MainActivity.this, new CallbackInterface<LkSpmi>() {
+                    @Override
+                    public void callback(LkSpmi lkspmi) {
+                        if (lkspmi == null) {
+                            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                        mainContent.setVisibility(View.VISIBLE);
+                        LkSingleton.getInstance().setLkSpmi(lkspmi);
+                        initializationView();
+                        getPermissions();
+                        new ProfileCurrentTask().execute();
+                    }
+                }).execute();
             }
-            setContentView(R.layout.activity_main);
-            initializationView();
-            getPermissions();
-            new ProfileCurrentTask().execute();
+            else {
+                mainContent.setVisibility(View.VISIBLE);
+                initializationView();
+                getPermissions();
+                new ProfileCurrentTask().execute();
+            }
         }
     }
 
@@ -287,7 +294,7 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    class ProfileCurrentTask extends AsyncTask<Void, Void, Void>{
+    class ProfileCurrentTask extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected Void doInBackground(Void... voids) {
@@ -296,6 +303,8 @@ public class MainActivity extends AppCompatActivity
                 ProfileCurrent profileCurrent = lkSpmi.getProfileCurrent();
                 LkSingleton.getInstance().setProfileCurrent(profileCurrent);
             } catch (IOException e) {
+                e.printStackTrace();
+            } catch (RuntimeException e) {
                 e.printStackTrace();
             }
             return null;
@@ -309,9 +318,9 @@ public class MainActivity extends AppCompatActivity
                 String lastname = profileCurrent.getUser().getLastname();
                 NavigationView navigationView = findViewById(R.id.nav_view);
                 View parentView = navigationView.getHeaderView(0);
-                TextView text = (TextView)parentView.findViewById(R.id.name);
+                TextView text = (TextView) parentView.findViewById(R.id.name);
                 text.setText(name + " " + lastname);
-                if (profileCurrent.getUser().getPhoto().getOrig() == null){
+                if (profileCurrent.getUser().getPhoto().getOrig() == null) {
                     AssetManager assetManager = getAssets();
 
                     InputStream istr;
@@ -325,20 +334,19 @@ public class MainActivity extends AppCompatActivity
                         // handle exception
                     }
 
-                }
-                else {
+                } else {
                     new ImageDownloadTask().execute();
                 }
             }
         }
     }
 
-    class ImageDownloadTask extends AsyncTask<Void, Void, Void>{
+    class ImageDownloadTask extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected Void doInBackground(Void... voids) {
             ProfileCurrent profileCurrent = LkSingleton.getInstance().getProfileCurrent();
-            if(profileCurrent != null && profileCurrent.getUser().getPhoto().getOrig() != null){
+            if (profileCurrent != null && profileCurrent.getUser().getPhoto().getOrig() != null) {
                 File file = getExternalCacheDir();
                 file = new File(file, "cache");
                 if (!file.exists() || !file.isDirectory()) file.mkdir();
@@ -357,7 +365,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(Void aVoid) {
             File file = new File(getExternalCacheDir(), "cache/profile_photo");
-            if (file.exists()){
+            if (file.exists()) {
                 InputStream istr;
                 Bitmap bitmap = null;
                 try {

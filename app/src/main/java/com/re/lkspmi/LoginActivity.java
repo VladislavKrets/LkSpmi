@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -40,32 +41,33 @@ public class LoginActivity extends AppCompatActivity {
         authorizationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    String login = loginEditText.getText().toString();
-                    String password = passwordEditText.getText().toString();
-                    LkSpmi lkSpmi = new LoginTask(login, password).execute().get();
-                    System.out.println(lkSpmi);
-                    if (lkSpmi == null){
-                        errorTextView.setText("Неправильный логин или пароль");
+
+                final String login = loginEditText.getText().toString();
+                final String password = passwordEditText.getText().toString();
+                LinearLayout linearLayout = findViewById(R.id.login_layout);
+                authorizationButton.setEnabled(false);
+                MainActivity.hideKeyboard(LoginActivity.this);
+                new LoginTask(login, password, linearLayout,
+                        LoginActivity.this, new CallbackInterface<LkSpmi>() {
+                    @Override
+                    public void callback(LkSpmi lkSpmi) {
+                        if (lkSpmi == null) {
+                            authorizationButton.setEnabled(true);
+                            errorTextView.setText("Что-то пошло не так во время авторизации");
+                        } else {
+                            LkSingleton.getInstance().setLkSpmi(lkSpmi);
+                            SharedPreferences sPref = getSharedPreferences("preferences", MODE_PRIVATE);
+                            SharedPreferences.Editor ed = sPref.edit();
+                            ed.putString("login", login);
+                            ed.putString("password", password);
+                            ed.apply();
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
                     }
-                    else {
-                        LkSingleton.getInstance().setLkSpmi(lkSpmi);
-                        SharedPreferences sPref = getSharedPreferences("preferences", MODE_PRIVATE);
-                        SharedPreferences.Editor ed = sPref.edit();
-                        ed.putString("login", login);
-                        ed.putString("password", password);
-                        ed.apply();
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }
-                } catch (ExecutionException e) {
-                    errorTextView.setText("Что-то пошло не так во время авторизации");
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    errorTextView.setText("Что-то пошло не так во время авторизации");
-                    e.printStackTrace();
-                }
+                }).execute();
+
             }
         });
 
