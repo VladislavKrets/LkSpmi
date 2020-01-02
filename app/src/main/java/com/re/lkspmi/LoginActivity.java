@@ -48,14 +48,14 @@ public class LoginActivity extends AppCompatActivity {
                 authorizationButton.setEnabled(false);
                 MainActivity.hideKeyboard(LoginActivity.this);
                 new LoginTask(login, password, linearLayout,
-                        LoginActivity.this, new CallbackInterface<LkSpmi>() {
+                        LoginActivity.this, new CallbackInterface<LoginTask.ResultLoginTask>() {
                     @Override
-                    public void callback(LkSpmi lkSpmi) {
-                        if (lkSpmi == null) {
+                    public void callback(LoginTask.ResultLoginTask resultLoginTask) {
+                        if (resultLoginTask.getStatus().equals("auth")) {
                             authorizationButton.setEnabled(true);
-                            errorTextView.setText("Что-то пошло не так во время авторизации");
-                        } else {
-                            LkSingleton.getInstance().setLkSpmi(lkSpmi);
+                            errorTextView.setText("Неправильный логин или пароль");
+                        } else if (resultLoginTask.getStatus().equals("ok")){
+                            LkSingleton.getInstance().setLkSpmi(resultLoginTask.getLkSpmi());
                             SharedPreferences sPref = getSharedPreferences("preferences", MODE_PRIVATE);
                             SharedPreferences.Editor ed = sPref.edit();
                             ed.putString("login", login);

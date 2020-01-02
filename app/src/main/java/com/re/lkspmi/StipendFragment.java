@@ -26,12 +26,13 @@ import ru.spmi.lk.entities.stipend.Stipend;
 
 public class StipendFragment extends Fragment {
     private View view;
+    private boolean isDestroyed = false;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.stipend_fragment, null);
-
+        isDestroyed = false;
         new StipendTask().execute();
 
         return view;
@@ -90,21 +91,31 @@ public class StipendFragment extends Fragment {
         ProgressBar progressBar;
         RelativeLayout relativeLayout;
 
+        public StipendTask() {
+            relativeLayout = null;
+        }
+
+        public StipendTask(RelativeLayout relativeLayout) {
+            this.relativeLayout = relativeLayout;
+        }
+
         @Override
         protected void onPreExecute() {
-            LinearLayout linearLayout = view.findViewById(R.id.stipend_layout);
-            relativeLayout = new RelativeLayout(getContext());
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
-                    RelativeLayout.LayoutParams.MATCH_PARENT);
-            relativeLayout.setLayoutParams(params);
-            linearLayout.addView(relativeLayout);
-            progressBar = new ProgressBar(getActivity(), null, android.R.attr.progressBarStyleLarge);
-            params = new RelativeLayout.LayoutParams(300, 300);
-            params.addRule(RelativeLayout.CENTER_IN_PARENT);
-            relativeLayout.addView(progressBar, params);
+            if (relativeLayout == null) {
+                LinearLayout linearLayout = view.findViewById(R.id.stipend_layout);
+                relativeLayout = new RelativeLayout(getContext());
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
+                        RelativeLayout.LayoutParams.MATCH_PARENT);
+                relativeLayout.setLayoutParams(params);
+                linearLayout.addView(relativeLayout);
+                progressBar = new ProgressBar(getActivity(), null, android.R.attr.progressBarStyleLarge);
+                params = new RelativeLayout.LayoutParams(300, 300);
+                params.addRule(RelativeLayout.CENTER_IN_PARENT);
+                relativeLayout.addView(progressBar, params);
 
-            relativeLayout.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.VISIBLE);
+                relativeLayout.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.VISIBLE);
+            }
         }
 
         @Override
@@ -113,17 +124,28 @@ public class StipendFragment extends Fragment {
                 List<Stipend> stipends = LkSingleton.getInstance().getLkSpmi().getStipend();
                 return stipends;
             } catch (IOException e) {
-                e.printStackTrace();
             }
             return null;
         }
 
         @Override
         protected void onPostExecute(List<Stipend> stipends) {
-            relativeLayout.setVisibility(View.GONE);
-            progressBar.setVisibility(View.GONE);
-            if (stipends != null)
-                initialize(stipends);
+            if (!isDestroyed) {
+                if (stipends != null) {
+                    LinearLayout linearLayout = view.findViewById(R.id.stipend_layout);
+                    linearLayout.removeView(relativeLayout);
+                    initialize(stipends);
+                }
+                else {
+                    new StipendTask(relativeLayout).execute();
+                }
+            }
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        isDestroyed = true;
     }
 }

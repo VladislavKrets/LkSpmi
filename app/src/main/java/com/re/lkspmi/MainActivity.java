@@ -174,19 +174,21 @@ public class MainActivity extends AppCompatActivity
             if (LkSingleton.getInstance().getLkSpmi() == null) {
 
                 new LoginTask(login, password,
-                        linearLayout, MainActivity.this, new CallbackInterface<LkSpmi>() {
+                        linearLayout, MainActivity.this, new CallbackInterface<LoginTask.ResultLoginTask>() {
                     @Override
-                    public void callback(LkSpmi lkspmi) {
-                        if (lkspmi == null) {
+                    public void callback(LoginTask.ResultLoginTask resultLoginTask) {
+                        if (resultLoginTask.getStatus().equals("auth")) {
                             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                             startActivity(intent);
                             finish();
                         }
-                        mainContent.setVisibility(View.VISIBLE);
-                        LkSingleton.getInstance().setLkSpmi(lkspmi);
-                        initializationView();
-                        getPermissions();
-                        new ProfileCurrentTask().execute();
+                        else {
+                            mainContent.setVisibility(View.VISIBLE);
+                            LkSingleton.getInstance().setLkSpmi(resultLoginTask.getLkSpmi());
+                            initializationView();
+                            getPermissions();
+                            new ProfileCurrentTask().execute();
+                        }
                     }
                 }).execute();
             }
@@ -303,9 +305,7 @@ public class MainActivity extends AppCompatActivity
                 ProfileCurrent profileCurrent = lkSpmi.getProfileCurrent();
                 LkSingleton.getInstance().setProfileCurrent(profileCurrent);
             } catch (IOException e) {
-                e.printStackTrace();
             } catch (RuntimeException e) {
-                e.printStackTrace();
             }
             return null;
         }

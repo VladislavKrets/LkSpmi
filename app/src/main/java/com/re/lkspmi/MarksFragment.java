@@ -37,11 +37,13 @@ import ru.spmi.lk.entities.rup.RupSemester;
 
 public class MarksFragment extends Fragment {
     private View view;
+    private boolean isDestroyed = false;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.marks_fragment, null);
+        isDestroyed = false;
         new MarksTask().execute();
         return view;
     }
@@ -173,21 +175,31 @@ public class MarksFragment extends Fragment {
         ProgressBar progressBar;
         RelativeLayout relativeLayout;
 
+        public MarksTask() {
+            relativeLayout = null;
+        }
+
+        public MarksTask(RelativeLayout relativeLayout) {
+            this.relativeLayout = relativeLayout;
+        }
+
         @Override
         protected void onPreExecute() {
-            LinearLayout linearLayout = view.findViewById(R.id.marks_layout);
-            relativeLayout = new RelativeLayout(getContext());
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
-                    RelativeLayout.LayoutParams.MATCH_PARENT);
-            relativeLayout.setLayoutParams(params);
-            linearLayout.addView(relativeLayout);
-            progressBar = new ProgressBar(getActivity(), null, android.R.attr.progressBarStyleLarge);
-            params = new RelativeLayout.LayoutParams(300, 300);
-            params.addRule(RelativeLayout.CENTER_IN_PARENT);
-            relativeLayout.addView(progressBar, params);
+            if (relativeLayout == null) {
+                LinearLayout linearLayout = view.findViewById(R.id.marks_layout);
+                relativeLayout = new RelativeLayout(getContext());
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
+                        RelativeLayout.LayoutParams.MATCH_PARENT);
+                relativeLayout.setLayoutParams(params);
+                linearLayout.addView(relativeLayout);
+                progressBar = new ProgressBar(getActivity(), null, android.R.attr.progressBarStyleLarge);
+                params = new RelativeLayout.LayoutParams(300, 300);
+                params.addRule(RelativeLayout.CENTER_IN_PARENT);
+                relativeLayout.addView(progressBar, params);
 
-            relativeLayout.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.VISIBLE);
+                relativeLayout.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.VISIBLE);
+            }
         }
         @Override
         protected List<Mark2> doInBackground(Void... voids) {
@@ -195,17 +207,28 @@ public class MarksFragment extends Fragment {
                 List<Mark2> marks = LkSingleton.getInstance().getLkSpmi().getMarks();
                 return marks;
             } catch (IOException e) {
-                e.printStackTrace();
             }
             return null;
         }
 
         @Override
         protected void onPostExecute(List<Mark2> marks) {
-            relativeLayout.setVisibility(View.GONE);
-            progressBar.setVisibility(View.GONE);
-            if (marks != null)
-            initialize(marks);
+            if (!isDestroyed) {
+                if (marks != null) {
+                    LinearLayout linearLayout = view.findViewById(R.id.marks_layout);
+                    linearLayout.removeView(relativeLayout);
+                    initialize(marks);
+                }
+                else {
+                    new MarksTask(relativeLayout).execute();
+                }
+            }
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        isDestroyed = true;
     }
 }

@@ -40,12 +40,13 @@ import ru.spmi.lk.entities.rup.RupSemesterSectionTerm;
 
 public class RupFragment extends Fragment implements Serializable {
     private View view;
-
+    private boolean isDestroyed = false;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.rup_fragment, null);
+        isDestroyed = false;
         new RupTask().execute();
         return view;
     }
@@ -199,21 +200,32 @@ public class RupFragment extends Fragment implements Serializable {
     class RupTask extends AsyncTask<Void, Void, RupSemester[]> {
         ProgressBar progressBar;
         RelativeLayout relativeLayout;
+
+        public RupTask() {
+            relativeLayout = null;
+        }
+
+        public RupTask(RelativeLayout relativeLayout) {
+            this.relativeLayout = relativeLayout;
+        }
+
         @Override
         protected void onPreExecute() {
-            LinearLayout linearLayout = view.findViewById(R.id.rup_layout);
-            relativeLayout = new RelativeLayout(getContext());
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
-                    RelativeLayout.LayoutParams.MATCH_PARENT);
-            relativeLayout.setLayoutParams(params);
-            linearLayout.addView(relativeLayout);
-            progressBar = new ProgressBar(getActivity(), null, android.R.attr.progressBarStyleLarge);
-            params = new RelativeLayout.LayoutParams(300, 300);
-            params.addRule(RelativeLayout.CENTER_IN_PARENT);
-            relativeLayout.addView(progressBar, params);
+            if (relativeLayout == null) {
+                LinearLayout linearLayout = view.findViewById(R.id.rup_layout);
+                relativeLayout = new RelativeLayout(getContext());
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
+                        RelativeLayout.LayoutParams.MATCH_PARENT);
+                relativeLayout.setLayoutParams(params);
+                linearLayout.addView(relativeLayout);
+                progressBar = new ProgressBar(getActivity(), null, android.R.attr.progressBarStyleLarge);
+                params = new RelativeLayout.LayoutParams(300, 300);
+                params.addRule(RelativeLayout.CENTER_IN_PARENT);
+                relativeLayout.addView(progressBar, params);
 
-            relativeLayout.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.VISIBLE);
+                relativeLayout.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.VISIBLE);
+            }
         }
 
         @Override
@@ -223,7 +235,6 @@ public class RupFragment extends Fragment implements Serializable {
                 RupSemester[] semesters = LkSingleton.getInstance().getLkSpmi().getRup().getSemesters();
                 return semesters;
             } catch (IOException e) {
-                e.printStackTrace();
             }
             return null;
         }
@@ -231,10 +242,21 @@ public class RupFragment extends Fragment implements Serializable {
 
         @Override
         protected void onPostExecute(RupSemester[] semesters) {
-            relativeLayout.setVisibility(View.GONE);
-            progressBar.setVisibility(View.GONE);
-            if (semesters != null)
-            initialize(semesters);
+            if (!isDestroyed) {
+                if (semesters != null) {
+                    LinearLayout linearLayout = view.findViewById(R.id.rup_layout);
+                    linearLayout.removeView(relativeLayout);
+                    initialize(semesters);
+                } else {
+                    new RupTask(relativeLayout).execute();
+                }
+            }
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        isDestroyed = true;
     }
 }

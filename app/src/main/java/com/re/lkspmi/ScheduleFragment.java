@@ -45,6 +45,7 @@ public class ScheduleFragment extends Fragment {
     private EditText dateEditText;
     private Button setDateEditText;
     private View view;
+    private boolean isDestroyed = false;
 
     @Nullable
     @Override
@@ -55,7 +56,7 @@ public class ScheduleFragment extends Fragment {
         scheduleListView = view.findViewById(R.id.schedule_list_view);
         dateEditText = view.findViewById(R.id.dateEditText);
         setDateEditText = view.findViewById(R.id.setDateEditText);
-
+        isDestroyed = false;
         dateFormat = new SimpleDateFormat("yyyy.MM.dd");
         date = new Date(System.currentTimeMillis());
         dateEditText.setText(dateFormat.format(date));
@@ -107,6 +108,14 @@ public class ScheduleFragment extends Fragment {
         ProgressBar progressBar;
         RelativeLayout relativeLayout;
 
+        public ScheduleTask() {
+            relativeLayout = null;
+        }
+
+        public ScheduleTask(RelativeLayout relativeLayout) {
+            this.relativeLayout = relativeLayout;
+        }
+
         @Override
         protected void onPreExecute() {
             LinearLayout linearLayout = view.findViewById(R.id.schedule_layout);
@@ -153,15 +162,24 @@ public class ScheduleFragment extends Fragment {
 
         @Override
         protected void onPostExecute(List<Schedule> schedules) {
-            relativeLayout.setVisibility(View.GONE);
-            progressBar.setVisibility(View.GONE);
-            if (schedules != null) {
-                scheduleAdapter = new ScheduleAdapter(ScheduleFragment.this.getContext(), schedules);
-                scheduleListView.setAdapter(scheduleAdapter);
+            if (!isDestroyed) {
+                if (schedules != null) {
+                    LinearLayout linearLayout = view.findViewById(R.id.schedule_layout);
+                    linearLayout.removeView(relativeLayout);
+                    scheduleAdapter = new ScheduleAdapter(ScheduleFragment.this.getContext(), schedules);
+                    scheduleListView.setAdapter(scheduleAdapter);
+                }
+                else {
+                    new ScheduleTask(relativeLayout).execute();
+                }
             }
         }
     }
 
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        isDestroyed = true;
+    }
 }
 

@@ -34,12 +34,13 @@ public class AttestationsFragment extends Fragment {
     String[] months = new String[]{
             "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
     };
-
+    private boolean isDestroyed = false;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.attestations_fragment, null);
+        isDestroyed = false;
         new AttestationsTask().execute();
         return view;
     }
@@ -145,21 +146,32 @@ public class AttestationsFragment extends Fragment {
     class AttestationsTask extends AsyncTask<Void, Void, AttestationSemesterData[]>{
         ProgressBar progressBar;
         RelativeLayout relativeLayout;
+
+        public AttestationsTask() {
+            relativeLayout = null;
+        }
+
+        public AttestationsTask(RelativeLayout relativeLayout) {
+            this.relativeLayout = relativeLayout;
+        }
+
         @Override
         protected void onPreExecute() {
-            LinearLayout linearLayout = view.findViewById(R.id.attestations_layout);
-            relativeLayout = new RelativeLayout(getContext());
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
-                    RelativeLayout.LayoutParams.MATCH_PARENT);
-            relativeLayout.setLayoutParams(params);
-            linearLayout.addView(relativeLayout);
-            progressBar = new ProgressBar(getActivity(), null, android.R.attr.progressBarStyleLarge);
-            params = new RelativeLayout.LayoutParams(300, 300);
-            params.addRule(RelativeLayout.CENTER_IN_PARENT);
-            relativeLayout.addView(progressBar, params);
+            if (relativeLayout == null) {
+                LinearLayout linearLayout = view.findViewById(R.id.attestations_layout);
+                relativeLayout = new RelativeLayout(getContext());
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
+                        RelativeLayout.LayoutParams.MATCH_PARENT);
+                relativeLayout.setLayoutParams(params);
+                linearLayout.addView(relativeLayout);
+                progressBar = new ProgressBar(getActivity(), null, android.R.attr.progressBarStyleLarge);
+                params = new RelativeLayout.LayoutParams(300, 300);
+                params.addRule(RelativeLayout.CENTER_IN_PARENT);
+                relativeLayout.addView(progressBar, params);
 
-            relativeLayout.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.VISIBLE);
+                relativeLayout.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.VISIBLE);
+            }
         }
         @Override
         protected AttestationSemesterData[] doInBackground(Void... voids) {
@@ -170,17 +182,27 @@ public class AttestationsFragment extends Fragment {
 
                 return data;
             } catch (IOException e) {
-                e.printStackTrace();
             }
             return null;
         }
 
         @Override
         protected void onPostExecute(AttestationSemesterData[] attestationSemesterData) {
-            relativeLayout.setVisibility(View.GONE);
-            progressBar.setVisibility(View.GONE);
-            if (attestationSemesterData != null)
-                initialize(attestationSemesterData);
+            if (!isDestroyed) {
+                if (attestationSemesterData != null) {
+                    LinearLayout linearLayout = view.findViewById(R.id.attestations_layout);
+                    linearLayout.removeView(relativeLayout);
+                    initialize(attestationSemesterData);
+                } else {
+                    new AttestationsTask(relativeLayout).execute();
+                }
+            }
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        isDestroyed = true;
     }
 }

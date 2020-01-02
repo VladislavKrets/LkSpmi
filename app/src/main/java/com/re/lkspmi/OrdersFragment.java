@@ -26,11 +26,13 @@ import ru.spmi.lk.entities.orders.Order;
 
 public class OrdersFragment extends Fragment {
     private View view;
+    private boolean isDestroyed = false;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.orders_fragment, null);
         new OrdersTask().execute();
+        isDestroyed = false;
         return view;
     }
     private void initialize(List<Order> orders){
@@ -85,21 +87,32 @@ public class OrdersFragment extends Fragment {
     class OrdersTask extends AsyncTask<Void, Void, List<Order>>{
         ProgressBar progressBar;
         RelativeLayout relativeLayout;
+
+        public OrdersTask() {
+            relativeLayout = null;
+        }
+
+        public OrdersTask(RelativeLayout relativeLayout) {
+            this.relativeLayout = relativeLayout;
+        }
+
         @Override
         protected void onPreExecute() {
-            LinearLayout linearLayout = view.findViewById(R.id.orders_layout);
-            relativeLayout = new RelativeLayout(getContext());
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
-                    RelativeLayout.LayoutParams.MATCH_PARENT);
-            relativeLayout.setLayoutParams(params);
-            linearLayout.addView(relativeLayout);
-            progressBar = new ProgressBar(getActivity(), null, android.R.attr.progressBarStyleLarge);
-            params = new RelativeLayout.LayoutParams(300, 300);
-            params.addRule(RelativeLayout.CENTER_IN_PARENT);
-            relativeLayout.addView(progressBar, params);
+            if (relativeLayout == null) {
+                LinearLayout linearLayout = view.findViewById(R.id.orders_layout);
+                relativeLayout = new RelativeLayout(getContext());
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
+                        RelativeLayout.LayoutParams.MATCH_PARENT);
+                relativeLayout.setLayoutParams(params);
+                linearLayout.addView(relativeLayout);
+                progressBar = new ProgressBar(getActivity(), null, android.R.attr.progressBarStyleLarge);
+                params = new RelativeLayout.LayoutParams(300, 300);
+                params.addRule(RelativeLayout.CENTER_IN_PARENT);
+                relativeLayout.addView(progressBar, params);
 
-            relativeLayout.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.VISIBLE);
+                relativeLayout.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.VISIBLE);
+            }
         }
         @Override
         protected List<Order> doInBackground(Void... voids) {
@@ -107,7 +120,6 @@ public class OrdersFragment extends Fragment {
                 List<Order> orders = LkSingleton.getInstance().getLkSpmi().getOrders();
                 return orders;
             } catch (IOException e) {
-                e.printStackTrace();
             }
             return null;
         }
@@ -116,8 +128,22 @@ public class OrdersFragment extends Fragment {
         protected void onPostExecute(List<Order> orders) {
             relativeLayout.setVisibility(View.GONE);
             progressBar.setVisibility(View.GONE);
-            if (orders != null)
-                initialize(orders);
+            if (!isDestroyed) {
+                if (orders != null) {
+                    LinearLayout linearLayout = view.findViewById(R.id.orders_layout);
+                    linearLayout.removeView(relativeLayout);
+                    initialize(orders);
+                }
+                else {
+                    new OrdersTask(relativeLayout).execute();
+                }
+            }
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        isDestroyed = true;
     }
 }
