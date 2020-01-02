@@ -197,6 +197,7 @@ public class MainActivity extends AppCompatActivity
             }
             else {
                 mainContent.setVisibility(View.VISIBLE);
+                drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
                 initializationView();
                 getPermissions();
                 new ProfileCurrentTask().execute();
