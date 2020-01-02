@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity
     private MarksFragment marksFragment;
     private OrdersFragment ordersFragment;
     private StipendFragment stipendFragment;
+    private SearchFragment searchFragment;
 
 
     @Override
@@ -107,7 +108,12 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_portfolio) {
 
         } else if (id == R.id.nav_search) {
-
+            if (!(prevFragment instanceof SearchFragment)) {
+                searchFragment = new SearchFragment();
+                fragmentTransaction.add(R.id.frame_layout, searchFragment);
+                fragmentTransaction.remove(prevFragment);
+                prevFragment = searchFragment;
+            }
         } else if (id == R.id.nav_bup) {
             if (prevFragment != bupFragment) {
                 fragmentTransaction.add(R.id.frame_layout, bupFragment);
@@ -233,6 +239,7 @@ public class MainActivity extends AppCompatActivity
         marksFragment = new MarksFragment();
         ordersFragment = new OrdersFragment();
         stipendFragment = new StipendFragment();
+        searchFragment = new SearchFragment();
         fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.add(R.id.frame_layout, scheduleFragment);
         fragmentTransaction.commit();
