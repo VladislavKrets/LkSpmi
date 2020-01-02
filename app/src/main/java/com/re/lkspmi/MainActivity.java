@@ -165,6 +165,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         LinearLayout linearLayout = findViewById(R.id.main_layout);
         final LinearLayout mainContent = findViewById(R.id.main_content);
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         mainContent.setVisibility(View.GONE);
         if (login == null || password == null || login.isEmpty() || password.isEmpty()) {
             Intent intent = new Intent(this, LoginActivity.class);
@@ -184,6 +186,7 @@ public class MainActivity extends AppCompatActivity
                         }
                         else {
                             mainContent.setVisibility(View.VISIBLE);
+                            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
                             LkSingleton.getInstance().setLkSpmi(resultLoginTask.getLkSpmi());
                             initializationView();
                             getPermissions();
