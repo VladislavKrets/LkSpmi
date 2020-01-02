@@ -52,6 +52,7 @@ public class StudentsSearchFragment extends Fragment {
     private ListView listView;
     private boolean isFullUploaded = false;
     private List<String> dataListView = new ArrayList<>();
+    private boolean isWorking = false;
 
     @Nullable
     @Override
@@ -301,7 +302,7 @@ public class StudentsSearchFragment extends Fragment {
                     public void onScroll(AbsListView view, int firstVisibleItem,
                                          int visibleItemCount, int totalItemCount) {
                         int lastItem = firstVisibleItem + visibleItemCount;
-                        if (!isFullUploaded && lastItem == totalItemCount){
+                        if (!isWorking && !isFullUploaded && lastItem == totalItemCount){
                             new GetStudentsTask(totalItemCount).execute();
                         }
                     }
@@ -318,6 +319,7 @@ public class StudentsSearchFragment extends Fragment {
 
         @Override
         protected void onPreExecute() {
+            isWorking = true;
             headerProgressBar.setVisibility(View.VISIBLE);
             name = nameEditText.getText().toString();
             qualificationIndex = qualificationsSpinner.getSelectedItemPosition();
@@ -378,6 +380,7 @@ public class StudentsSearchFragment extends Fragment {
                         dataListView.add(studentsSearchResponseItem.getFullname());
                     }
                     listViewAdapter.notifyDataSetChanged();
+                    isWorking = false;
             } else {
                 new GetStudentsTask().execute();
             }
