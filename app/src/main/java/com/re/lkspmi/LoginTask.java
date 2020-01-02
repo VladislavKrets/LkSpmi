@@ -17,14 +17,14 @@ public class LoginTask extends AsyncTask<Void, Void, LoginTask.ResultLoginTask> 
 
     private String login;
     private String password;
-    private CallbackInterface callbackInterface;
+    private CallbackInterface<ResultLoginTask> callbackInterface;
     private LinearLayout linearLayout;
     private Context context;
     ProgressBar progressBar;
     RelativeLayout relativeLayout;
 
     public LoginTask(String login, String password, LinearLayout linearLayout, Context context,
-                     CallbackInterface callbackInterface) {
+                     CallbackInterface<ResultLoginTask> callbackInterface) {
         this.login = login;
         this.password = password;
         this.linearLayout = linearLayout;
@@ -34,7 +34,7 @@ public class LoginTask extends AsyncTask<Void, Void, LoginTask.ResultLoginTask> 
     }
 
     public LoginTask(String login, String password, LinearLayout linearLayout,
-                     Context context, CallbackInterface callbackInterface, RelativeLayout relativeLayout) {
+                     Context context, CallbackInterface<ResultLoginTask> callbackInterface, RelativeLayout relativeLayout) {
         this.login = login;
         this.password = password;
         this.linearLayout = linearLayout;
