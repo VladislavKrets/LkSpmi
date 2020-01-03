@@ -83,14 +83,18 @@ public class SearchAdapter extends BaseAdapter {
         }
         ProgressBar progressBar = view.findViewById(R.id.search_item_progressbar);
         ImageView imageView = view.findViewById(R.id.search_item_avatar);
-        imageView.setVisibility(View.GONE);
+
         TextView name = view.findViewById(R.id.search_item_name);
         LinearLayout linearLayout = view.findViewById(R.id.search_view_item_layout);
         StudentsSearchResponseItem p = getItem(position);
         name.setText(p.getFullname());
 
         if (position > bitmaps.size() && !isWorking)
-        new ImageTask(progressBar, imageView, p, linearLayout, prevPosition).execute();
+            new ImageTask(progressBar, imageView, p, linearLayout, prevPosition).execute();
+        else {
+            progressBar.setVisibility(View.VISIBLE);
+            imageView.setVisibility(View.GONE);
+        }
         if (bitmaps.size() > position){
             imageView.setImageBitmap(bitmaps.get(position));
             progressBar.setVisibility(View.GONE);
@@ -128,7 +132,6 @@ public class SearchAdapter extends BaseAdapter {
         @Override
         protected void onPreExecute() {
             isWorking = true;
-            progressBar.setVisibility(View.VISIBLE);
 
         }
 
