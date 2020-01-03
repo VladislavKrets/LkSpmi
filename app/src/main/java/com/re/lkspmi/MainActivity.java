@@ -61,11 +61,13 @@ public class MainActivity extends AppCompatActivity
     private SearchFragment searchFragment;
 
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
+        if (savedInstanceState == null)
         cacheRemove();
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);

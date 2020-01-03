@@ -1,5 +1,6 @@
 package com.re.lkspmi;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -8,12 +9,14 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatImageView;
+import android.text.InputType;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -63,6 +66,12 @@ public class StudentsSearchFragment extends Fragment {
         view = inflater.inflate(R.layout.students_search_fragment, null);
         new BuildViewTask().execute();
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MainActivity.hideKeyboard(getActivity());
     }
 
     private ExpansionLayout createExpansionLayout() {
@@ -184,7 +193,8 @@ public class StudentsSearchFragment extends Fragment {
             } else {
                 LinearLayout linearLayout = view.findViewById(R.id.students_search_layout);
                 linearLayout.removeView(relativeLayout);
-                ExpansionHeader expansionHeader = createExpansionHeader("Параметры поиска");
+                final ExpansionHeader expansionHeader = createExpansionHeader("Параметры поиска");
+
                 final ExpansionLayout expansionLayout = createExpansionLayout();
 
                 linearLayout = new LinearLayout(getContext());
@@ -307,6 +317,22 @@ public class StudentsSearchFragment extends Fragment {
                         if (!isWorking && !isFullUploaded && lastItem == totalItemCount){
                             new GetStudentsTask(totalItemCount).execute();
                         }
+                    }
+                });
+
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Intent intent = new Intent(getContext(), UserProfileActivity.class);
+                        intent.putExtra("photo", "profile_photo_"
+                                + dataListView.get(position).getUserId());
+                        intent.putExtra("name", dataListView.get(position).getFullname());
+                        intent.putExtra("qualification", dataListView.get(position).getEduQualification());
+                        intent.putExtra("specialization", dataListView.get(position).getEduSpecialization());
+                        intent.putExtra("direction", dataListView.get(position).getEduDirection());
+                        intent.putExtra("department", dataListView.get(position).getDepartment());
+                        intent.putExtra("group", dataListView.get(position).getEduGroup());
+                        startActivity(intent);
                     }
                 });
 
