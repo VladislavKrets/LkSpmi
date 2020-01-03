@@ -128,7 +128,6 @@ public class SearchAdapter extends BaseAdapter {
         @Override
         protected void onPreExecute() {
             isWorking = true;
-            if (imageView.getVisibility() == View.GONE)
             progressBar.setVisibility(View.VISIBLE);
 
         }
