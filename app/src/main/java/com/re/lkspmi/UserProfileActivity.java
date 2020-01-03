@@ -28,6 +28,7 @@ public class UserProfileActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Профиль");
 
         ImageView imageView = findViewById(R.id.profile_image_view);
         String image = getIntent().getStringExtra("photo");
