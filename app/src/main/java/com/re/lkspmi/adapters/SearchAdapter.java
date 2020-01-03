@@ -183,4 +183,8 @@ public class SearchAdapter extends BaseAdapter {
 
         }
     }
+
+    public void bitmapsReset(){
+        bitmaps.clear();
+    }
 }

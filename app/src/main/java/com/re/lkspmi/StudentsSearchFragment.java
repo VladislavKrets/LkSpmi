@@ -276,6 +276,7 @@ public class StudentsSearchFragment extends Fragment {
                         isFullUploaded = false;
                         dataListView.clear();
                         listViewAdapter.notifyDataSetChanged();
+                        listViewAdapter.bitmapsReset();
                         new GetStudentsTask().execute();
                     }
                 });
