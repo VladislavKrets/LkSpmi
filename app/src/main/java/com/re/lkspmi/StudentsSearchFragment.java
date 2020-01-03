@@ -27,6 +27,7 @@ import android.widget.TextView;
 
 import com.github.florent37.expansionpanel.ExpansionHeader;
 import com.github.florent37.expansionpanel.ExpansionLayout;
+import com.re.lkspmi.adapters.SearchAdapter;
 import com.re.lkspmi.adapters.SearchEduDepAdapter;
 import com.re.lkspmi.adapters.SearchQualificationsAdapter;
 import com.re.lkspmi.adapters.SearchSpecializationsAdapter;
@@ -46,12 +47,13 @@ import ru.spmi.lk.entities.search.students.StudentsSearchResponseItem;
 public class StudentsSearchFragment extends Fragment {
     private View view;
     private EditText nameEditText;
-    private ArrayAdapter<String> specializationsAdapter, qualificationsAdapter, departmentsAdapter, listViewAdapter;
+    private ArrayAdapter<String> specializationsAdapter, qualificationsAdapter, departmentsAdapter;
+    private SearchAdapter listViewAdapter;
     private Spinner specializationSpinner, qualificationsSpinner, departmentsSpinner;
     private ProgressBar headerProgressBar;
     private ListView listView;
     private boolean isFullUploaded = false;
-    private List<String> dataListView = new ArrayList<>();
+    private List<StudentsSearchResponseItem> dataListView = new ArrayList<>();
     private boolean isWorking = false;
 
     @Nullable
@@ -288,8 +290,7 @@ public class StudentsSearchFragment extends Fragment {
                 listView.setLayoutParams(new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                 linearLayout.addView(listView);
-                listViewAdapter = new ArrayAdapter<String>(getActivity(),
-                        android.R.layout.simple_list_item_1, dataListView);
+                listViewAdapter = new SearchAdapter(getActivity(), dataListView);
                 listView.setAdapter(listViewAdapter);
                 listViewAdapter.notifyDataSetChanged();
                 listView.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -339,7 +340,7 @@ public class StudentsSearchFragment extends Fragment {
         @Override
         protected StudentsSearchResponseItem[] doInBackground(Void... voids) {
             StudentsSearchRequestBuilder builder = LkSingleton.getInstance().getLkSpmi()
-                    .searchStudents().setRows(50).setFirst(firstItem);
+                    .searchStudents().setRows(25).setFirst(firstItem);
             if (name != null && !name.trim().isEmpty()) {
                 builder = builder.addEduFullNameFilter(name);
             }
@@ -373,11 +374,11 @@ public class StudentsSearchFragment extends Fragment {
                 if (studentsSearchResponseItems.length == 0) isFullUploaded = true;
                 headerProgressBar.setVisibility(View.INVISIBLE);
                     for (StudentsSearchResponseItem studentsSearchResponseItem : studentsSearchResponseItems) {
-                        if (dataListView.size() > 0 && studentsSearchResponseItem.getFullname().equals(dataListView.get(0))){
+                        if (dataListView.size() > 0 && studentsSearchResponseItem.getFullname()
+                                .equals(dataListView.get(0).getFullname())){
                             break;
                         }
-                        System.out.println(studentsSearchResponseItem.getFullname());
-                        dataListView.add(studentsSearchResponseItem.getFullname());
+                        dataListView.add(studentsSearchResponseItem);
                     }
                     listViewAdapter.notifyDataSetChanged();
                     isWorking = false;

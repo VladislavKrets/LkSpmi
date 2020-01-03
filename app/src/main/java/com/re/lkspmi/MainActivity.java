@@ -64,11 +64,46 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        cacheRemove();
+
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         checkLogin();
         hideKeyboard(this);
     }
 
+    private void cacheRemove() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            int permissionStatus = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+
+            if (permissionStatus == PackageManager.PERMISSION_GRANTED) {
+                File file = getExternalCacheDir();
+                File[] files = file.listFiles();
+                for (File f : files) {
+                    deleteFile(f);
+                }
+            }
+        }
+        else {
+            File file = getExternalCacheDir();
+            File[] files = file.listFiles();
+            for (File f : files) {
+                deleteFile(f);
+            }
+        }
+    }
+
+    public void deleteFile(File file){
+        if (file.isFile()) file.delete();
+        else {
+            File[] files = file.listFiles();
+            for (File f : files){
+                deleteFile(f);
+            }
+            file.delete();
+        }
+    }
     public static void hideKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(INPUT_METHOD_SERVICE);
         View view = activity.getCurrentFocus();
@@ -393,4 +428,12 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
+
+    @Override
+    protected void onDestroy() {
+
+        super.onDestroy();
+    }
+
+
 }
