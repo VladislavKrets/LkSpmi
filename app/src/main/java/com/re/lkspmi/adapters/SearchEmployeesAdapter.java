@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.support.design.widget.NavigationView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,20 +24,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.spmi.lk.authorization.LkSpmi;
+import ru.spmi.lk.entities.search.employees.EmployeeSearchResponseItem;
 import ru.spmi.lk.entities.search.students.StudentsSearchResponseItem;
 
-public class SearchAdapter extends BaseAdapter {
+public class SearchEmployeesAdapter extends BaseAdapter {
 
     Context ctx;
     LayoutInflater lInflater;
-    List<StudentsSearchResponseItem> objects;
+    List<EmployeeSearchResponseItem> objects;
     List<Bitmap> bitmaps;
     int prevPosition;
     int currPosition;
     boolean isWorking = false;
     private int viewTypeCount;
 
-    public SearchAdapter(Context context, List<StudentsSearchResponseItem> products) {
+    public SearchEmployeesAdapter(Context context, List<EmployeeSearchResponseItem> products) {
         ctx = context;
         objects = products;
         prevPosition = 0;
@@ -55,7 +55,7 @@ public class SearchAdapter extends BaseAdapter {
     }
 
     @Override
-    public StudentsSearchResponseItem getItem(int position) {
+    public EmployeeSearchResponseItem getItem(int position) {
         return objects.get(position);
     }
 
@@ -86,10 +86,10 @@ public class SearchAdapter extends BaseAdapter {
 
         TextView name = view.findViewById(R.id.search_item_name);
         LinearLayout linearLayout = view.findViewById(R.id.search_view_item_layout);
-        StudentsSearchResponseItem p = getItem(position);
+        EmployeeSearchResponseItem p = getItem(position);
         name.setText(p.getFullname());
-
-        if (position > bitmaps.size() && !isWorking)
+        System.out.println("before imagetask " + bitmaps.size());
+        if (position >= bitmaps.size() && !isWorking)
             new ImageTask(progressBar, imageView, p, linearLayout, prevPosition).execute();
         else {
             progressBar.setVisibility(View.VISIBLE);
@@ -108,22 +108,24 @@ public class SearchAdapter extends BaseAdapter {
     @Override
     public void notifyDataSetChanged() {
         super.notifyDataSetChanged();
-        viewTypeCount = getCount() > 1 ? getCount() : 1;
-        prevPosition = currPosition;
-        currPosition = objects.size();
+        if (currPosition != objects.size()) {
+            viewTypeCount = getCount() > 1 ? getCount() : 1;
+            prevPosition = currPosition;
+            currPosition = objects.size();
+        }
     }
 
-    class ImageTask extends AsyncTask<Void, Void, Void>{
+    class ImageTask extends AsyncTask<Void, Void, Void> {
         ProgressBar progressBar;
-        StudentsSearchResponseItem studentsSearchResponseItem;
+        EmployeeSearchResponseItem employeeSearchResponseItem;
         ImageView imageView;
         LinearLayout linearLayout;
         int position = 0;
 
         public ImageTask(ProgressBar progressBar, ImageView imageView,
-                         StudentsSearchResponseItem studentsSearchResponseItem, LinearLayout linearLayout, int position) {
+                         EmployeeSearchResponseItem employeeSearchResponseItem, LinearLayout linearLayout, int position) {
             this.progressBar = progressBar;
-            this.studentsSearchResponseItem = studentsSearchResponseItem;
+            this.employeeSearchResponseItem = employeeSearchResponseItem;
             this.imageView = imageView;
             this.linearLayout = linearLayout;
             this.position = position;
@@ -144,10 +146,10 @@ public class SearchAdapter extends BaseAdapter {
                     if (!file.exists() || !file.isDirectory()) file.mkdir();
                     LkSpmi lkSpmi = LkSingleton.getInstance().getLkSpmi();
                     try {
-                        lkSpmi.downloadImage("profile_photo_" + objects.get(i).getUserId(),
+                        lkSpmi.downloadImage("empl_profile_photo_" + objects.get(i).getId(),
                                 objects.get(i).getPhoto().getOrig(), file.getAbsolutePath());
-                        file = new File(ctx.getExternalCacheDir(), "cache/profile_photo_"
-                                + objects.get(i).getUserId());
+                        file = new File(ctx.getExternalCacheDir(), "cache/empl_profile_photo_"
+                                + objects.get(i).getId());
                         InputStream istr = new FileInputStream(file);
                         Bitmap bitmap = BitmapFactory.decodeStream(istr);
                         bitmaps.add(bitmap);
@@ -172,10 +174,10 @@ public class SearchAdapter extends BaseAdapter {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-
+            System.out.println("bitmapsss " + bitmaps.size());
             if (bitmaps.size() != objects.size()){
                 bitmaps.clear();
-                new ImageTask(progressBar, imageView, studentsSearchResponseItem, linearLayout, position)
+                new ImageTask(progressBar, imageView, employeeSearchResponseItem, linearLayout, position)
                         .execute();
             }
             else {
@@ -188,5 +190,9 @@ public class SearchAdapter extends BaseAdapter {
 
     public void bitmapsReset(){
         bitmaps.clear();
+        viewTypeCount = 1;
+        prevPosition = 0;
+        currPosition = 0;
+        isWorking = false;
     }
 }

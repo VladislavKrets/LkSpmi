@@ -9,7 +9,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatImageView;
-import android.text.InputType;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -30,7 +29,7 @@ import android.widget.TextView;
 
 import com.github.florent37.expansionpanel.ExpansionHeader;
 import com.github.florent37.expansionpanel.ExpansionLayout;
-import com.re.lkspmi.adapters.SearchAdapter;
+import com.re.lkspmi.adapters.SearchStudentsAdapter;
 import com.re.lkspmi.adapters.SearchEduDepAdapter;
 import com.re.lkspmi.adapters.SearchQualificationsAdapter;
 import com.re.lkspmi.adapters.SearchSpecializationsAdapter;
@@ -38,7 +37,6 @@ import com.re.lkspmi.adapters.SearchSpecializationsAdapter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import ru.spmi.lk.entities.search.students.EduDep;
@@ -51,7 +49,7 @@ public class StudentsSearchFragment extends Fragment {
     private View view;
     private EditText nameEditText;
     private ArrayAdapter<String> specializationsAdapter, qualificationsAdapter, departmentsAdapter;
-    private SearchAdapter listViewAdapter;
+    private SearchStudentsAdapter listViewAdapter;
     private Spinner specializationSpinner, qualificationsSpinner, departmentsSpinner;
     private ProgressBar headerProgressBar;
     private ListView listView;
@@ -285,8 +283,8 @@ public class StudentsSearchFragment extends Fragment {
                         expansionLayout.collapse(true);
                         isFullUploaded = false;
                         dataListView.clear();
-                        listViewAdapter.notifyDataSetChanged();
                         listViewAdapter.bitmapsReset();
+                        listViewAdapter.notifyDataSetChanged();
                         new GetStudentsTask().execute();
                     }
                 });
@@ -301,7 +299,7 @@ public class StudentsSearchFragment extends Fragment {
                 listView.setLayoutParams(new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                 linearLayout.addView(listView);
-                listViewAdapter = new SearchAdapter(getActivity(), dataListView);
+                listViewAdapter = new SearchStudentsAdapter(getActivity(), dataListView);
                 listView.setAdapter(listViewAdapter);
                 listViewAdapter.notifyDataSetChanged();
                 listView.setOnScrollListener(new AbsListView.OnScrollListener() {

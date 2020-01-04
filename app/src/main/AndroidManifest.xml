@@ -15,9 +15,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".EmployeeUserActivity"
+            android:label="@string/title_activity_employee_user"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
             android:name=".UserProfileActivity"
             android:label="@string/title_activity_user_profile"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".LoginActivity" />
         <activity
             android:name=".MainActivity"

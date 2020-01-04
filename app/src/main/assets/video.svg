@@ -1,0 +1,17 @@
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" height="100" version="1.1" viewBox="0 0 100 100"
+    width="100" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <path d="M0 0h54l21 22.227V98H0z" fill="#E5E8EB" id="a" />
+        <path d="M54 0l21 22.227H54z" fill="#535C69" id="b" opacity=".3" />
+        <path d="M30 44.454h55v28.288H30z" id="c" />
+    </defs>
+    <g fill="none" fill-rule="evenodd">
+        <g fill-rule="nonzero" transform="translate(12 1)">
+            <use xlink:href="#a" />
+            <use xlink:href="#b" />
+            <path d="M10.002 39.434v40.241H65v-40.24H10.002zM63 77.794H12V41.423h51v36.37zm-6 0h-2V41.423h2v36.37zm0-36.371h6v3.03h-6v-3.03zm0 6.062h6v4.04h-6v-4.04zm0 7.072h6v4.04h-6v-4.04zm0 7.072h6v4.041h-6V61.63zm0 7.072h6v4.041h-6v-4.041zm6 7.072v2.02h-6v-2.02h6zm-45-34.35h2v36.37h-2v-36.37zm0 36.37h-6v-2.02h6v2.02zm0-5.05h-6V68.7h6v4.041zm0-7.073h-6V61.63h6v4.041zm0-7.072h-6v-4.041h6v4.04zm0-7.072h-6v-4.041h6v4.04zm0-7.072h-6v-3.031h6v3.03z"
+                fill="#B9BEC4" />
+        </g>
+
+    </g>
+</svg>
