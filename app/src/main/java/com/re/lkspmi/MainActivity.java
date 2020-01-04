@@ -19,6 +19,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.ViewDragHelper;
+import android.support.v7.app.AppCompatDelegate;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -59,9 +60,11 @@ public class MainActivity extends AppCompatActivity
     private OrdersFragment ordersFragment;
     private StipendFragment stipendFragment;
     private SearchFragment searchFragment;
+    private DiskFragment diskFragment;
 
-
-
+    static {
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,6 +144,11 @@ public class MainActivity extends AppCompatActivity
                 prevFragment = attestationsFragment;
             }
         } else if (id == R.id.nav_disk) {
+            if (prevFragment != diskFragment) {
+                fragmentTransaction.add(R.id.frame_layout, diskFragment);
+                fragmentTransaction.remove(prevFragment);
+                prevFragment = diskFragment;
+            }
 
         } else if (id == R.id.nav_portfolio) {
 
@@ -277,6 +285,7 @@ public class MainActivity extends AppCompatActivity
         ordersFragment = new OrdersFragment();
         stipendFragment = new StipendFragment();
         searchFragment = new SearchFragment();
+        diskFragment = new DiskFragment();
         fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.add(R.id.frame_layout, scheduleFragment);
         fragmentTransaction.commit();
