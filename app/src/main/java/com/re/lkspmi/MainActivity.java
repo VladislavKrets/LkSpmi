@@ -144,7 +144,8 @@ public class MainActivity extends AppCompatActivity
                 prevFragment = attestationsFragment;
             }
         } else if (id == R.id.nav_disk) {
-            if (prevFragment != diskFragment) {
+            if (!(prevFragment instanceof DiskFragment)) {
+                diskFragment = new DiskFragment();
                 fragmentTransaction.add(R.id.frame_layout, diskFragment);
                 fragmentTransaction.remove(prevFragment);
                 prevFragment = diskFragment;

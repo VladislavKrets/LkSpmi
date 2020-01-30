@@ -63,17 +63,21 @@ public class DownloadService extends Service {
 
                 // Configure the notification channel.
                 notificationChannel.setDescription("downloading");
+                notificationChannel.setImportance(NotificationManager.IMPORTANCE_HIGH);
+
                 notificationManager.createNotificationChannel(notificationChannel);
             }
 
 
             notificationBuilder = new NotificationCompat.Builder(DownloadService.this, NOTIFICATION_CHANNEL_ID);
 
-            notificationBuilder.setAutoCancel(true)
-                    .setDefaults(Notification.DEFAULT_ALL)
+            notificationBuilder
                     .setWhen(System.currentTimeMillis())
+                    .setPriority(Notification.PRIORITY_HIGH)
                     .setContentTitle("Загрузка")
                     .setOngoing(true)
+                    .setDefaults(Notification.DEFAULT_ALL)
+                    .setVibrate(new long[0])
                     .setSmallIcon(R.drawable.ic_menu_share)
                     .setContentText("Файл " + filename + " загружается");
 
@@ -110,24 +114,35 @@ public class DownloadService extends Service {
                 PendingIntent pendingIntent = PendingIntent.getActivity(DownloadService.this,
                         0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-                notificationBuilder.setAutoCancel(true)
+                notificationBuilder
                         .setDefaults(Notification.DEFAULT_ALL)
                         .setWhen(System.currentTimeMillis())
                         .setContentIntent(pendingIntent)
+                        .setOngoing(false)
+                        .setPriority(Notification.PRIORITY_HIGH)
                         .setContentTitle("Загрузка")
+                        .setVibrate(new long[0])
                         .setSmallIcon(R.drawable.ic_menu_share)
                         .setContentText("Файл " + filename + " успешно загружен");
+                Toast.makeText(DownloadService.this, "Файл "
+                        + filename + " успешно загружен", Toast.LENGTH_SHORT).show();
+
                 notificationManager.notify(1, notificationBuilder.build());
             }
             else {
                 notificationManager.cancel(1);
-                notificationBuilder.setAutoCancel(true)
+                notificationBuilder
                         .setDefaults(Notification.DEFAULT_ALL)
                         .setWhen(System.currentTimeMillis())
                         .setContentTitle("Загрузка")
+                        .setOngoing(false)
+                        .setVibrate(new long[0])
+                        .setPriority(Notification.PRIORITY_HIGH)
                         .setSmallIcon(R.drawable.ic_menu_share)
                         .setContentText("Ошибка загрузки файла " + filename);
                 notificationManager.notify(1, notificationBuilder.build());
+                Toast.makeText(DownloadService.this, "Ошибка загрузки файла " + filename,
+                        Toast.LENGTH_SHORT).show();
             }
         }
     }
