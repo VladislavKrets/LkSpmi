@@ -1,15 +1,11 @@
-package com.re.lkspmi;
+package com.re.lkspmi.fragments;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.app.Dialog;
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -24,13 +20,16 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
+import com.re.lkspmi.utils.LkSingleton;
+import com.re.lkspmi.R;
+import com.re.lkspmi.adapters.ScheduleAdapter;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import ru.spmi.lk.entities.profile.ProfileCurrent;
 import ru.spmi.lk.entities.schedule.Schedule;

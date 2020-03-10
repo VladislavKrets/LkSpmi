@@ -1,4 +1,4 @@
-package com.re.lkspmi;
+package com.re.lkspmi.fragments;
 
 import android.content.res.Resources;
 import android.os.AsyncTask;
@@ -18,8 +18,10 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.re.lkspmi.utils.LkSingleton;
+import com.re.lkspmi.R;
+
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 
 import ru.spmi.lk.entities.bup.BupSection;
 

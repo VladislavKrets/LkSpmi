@@ -1,4 +1,4 @@
-package com.re.lkspmi;
+package com.re.lkspmi.fragments;
 
 import android.content.Intent;
 import android.content.res.Resources;
@@ -29,6 +29,10 @@ import android.widget.TextView;
 
 import com.github.florent37.expansionpanel.ExpansionHeader;
 import com.github.florent37.expansionpanel.ExpansionLayout;
+import com.re.lkspmi.utils.LkSingleton;
+import com.re.lkspmi.MainActivity;
+import com.re.lkspmi.R;
+import com.re.lkspmi.UserProfileActivity;
 import com.re.lkspmi.adapters.SearchStudentsAdapter;
 import com.re.lkspmi.adapters.SearchEduDepAdapter;
 import com.re.lkspmi.adapters.SearchQualificationsAdapter;

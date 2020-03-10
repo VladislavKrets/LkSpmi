@@ -1,4 +1,4 @@
-package com.re.lkspmi;
+package com.re.lkspmi.adapters;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

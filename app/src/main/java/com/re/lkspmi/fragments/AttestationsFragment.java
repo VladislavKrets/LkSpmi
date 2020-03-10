@@ -1,4 +1,4 @@
-package com.re.lkspmi;
+package com.re.lkspmi.fragments;
 
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -19,12 +19,12 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.re.lkspmi.utils.LkSingleton;
+import com.re.lkspmi.R;
+
 import java.io.IOException;
 import java.util.Calendar;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 
-import ru.spmi.lk.entities.attestations.Attestation;
 import ru.spmi.lk.entities.attestations.AttestationDisciplineData;
 import ru.spmi.lk.entities.attestations.AttestationSemester;
 import ru.spmi.lk.entities.attestations.AttestationSemesterData;
@@ -146,6 +146,7 @@ public class AttestationsFragment extends Fragment {
     class AttestationsTask extends AsyncTask<Void, Void, AttestationSemesterData[]>{
         ProgressBar progressBar;
         RelativeLayout relativeLayout;
+        boolean isEmpty = false;
 
         public AttestationsTask() {
             relativeLayout = null;
@@ -176,9 +177,14 @@ public class AttestationsFragment extends Fragment {
         @Override
         protected AttestationSemesterData[] doInBackground(Void... voids) {
             try {
-                AttestationSemesterData[] data
+                AttestationSemester[] semesters
                         = LkSingleton.getInstance().getLkSpmi()
-                        .getAttestations().get(0).getSemesters()[0].getData();
+                        .getAttestations().get(0).getSemesters();
+                if (semesters.length == 0){
+                    isEmpty = true;
+                    return null;
+                }
+                AttestationSemesterData[] data = semesters[0].getData();
 
                 return data;
             } catch (IOException e) {
@@ -189,6 +195,7 @@ public class AttestationsFragment extends Fragment {
         @Override
         protected void onPostExecute(AttestationSemesterData[] attestationSemesterData) {
             if (!isDestroyed) {
+                if (isEmpty) return;
                 if (attestationSemesterData != null) {
                     LinearLayout linearLayout = view.findViewById(R.id.attestations_layout);
                     linearLayout.removeView(relativeLayout);

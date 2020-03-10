@@ -1,10 +1,7 @@
-package com.re.lkspmi;
+package com.re.lkspmi.fragments;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Point;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -16,20 +13,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
-import com.applantation.android.svg.SVG;
-import com.applantation.android.svg.SVGParser;
+import com.re.lkspmi.services.DownloadService;
+import com.re.lkspmi.utils.LkSingleton;
+import com.re.lkspmi.R;
 import com.re.lkspmi.adapters.DiskAdapter;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 

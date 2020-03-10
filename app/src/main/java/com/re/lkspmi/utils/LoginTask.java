@@ -1,4 +1,4 @@
-package com.re.lkspmi;
+package com.re.lkspmi.utils;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -6,6 +6,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+
+import com.re.lkspmi.interfaces.CallbackInterface;
 
 import java.io.IOException;
 

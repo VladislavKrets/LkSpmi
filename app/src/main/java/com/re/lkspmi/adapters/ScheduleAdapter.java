@@ -1,4 +1,4 @@
-package com.re.lkspmi;
+package com.re.lkspmi.adapters;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -11,6 +11,8 @@ import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.re.lkspmi.R;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +24,7 @@ public class ScheduleAdapter extends BaseAdapter {
     LayoutInflater lInflater;
     List<List<Schedule>> schedules;
 
-    ScheduleAdapter(Context context, List<Schedule> schedules) {
+    public ScheduleAdapter(Context context, List<Schedule> schedules) {
         ctx = context;
         this.schedules = new ArrayList<>();
         List<Schedule> list = null;

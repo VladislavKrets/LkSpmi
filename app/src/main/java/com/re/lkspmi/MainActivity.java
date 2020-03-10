@@ -12,8 +12,6 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -30,17 +28,30 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.re.lkspmi.fragments.AttestationsFragment;
+import com.re.lkspmi.fragments.BupFragment;
+import com.re.lkspmi.fragments.DiskFragment;
+import com.re.lkspmi.fragments.MarksFragment;
+import com.re.lkspmi.fragments.OrdersFragment;
+import com.re.lkspmi.fragments.PortflioFragment;
+import com.re.lkspmi.fragments.ProfileFragment;
+import com.re.lkspmi.fragments.RupFragment;
+import com.re.lkspmi.fragments.ScheduleFragment;
+import com.re.lkspmi.fragments.SearchFragment;
+import com.re.lkspmi.fragments.StipendFragment;
+import com.re.lkspmi.interfaces.CallbackInterface;
+import com.re.lkspmi.utils.LkSingleton;
+import com.re.lkspmi.utils.LoginTask;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.util.concurrent.ExecutionException;
 
 import ru.spmi.lk.authorization.LkSpmi;
 import ru.spmi.lk.entities.profile.ProfileCurrent;
@@ -61,6 +72,7 @@ public class MainActivity extends AppCompatActivity
     private StipendFragment stipendFragment;
     private SearchFragment searchFragment;
     private DiskFragment diskFragment;
+    private PortflioFragment portflioFragment;
 
     static {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
@@ -152,6 +164,11 @@ public class MainActivity extends AppCompatActivity
             }
 
         } else if (id == R.id.nav_portfolio) {
+            if (prevFragment != portflioFragment){
+                fragmentTransaction.add(R.id.frame_layout, portflioFragment);
+                fragmentTransaction.remove(prevFragment);
+                prevFragment = portflioFragment;
+            }
 
         } else if (id == R.id.nav_search) {
             if (!(prevFragment instanceof SearchFragment)) {
@@ -287,6 +304,8 @@ public class MainActivity extends AppCompatActivity
         stipendFragment = new StipendFragment();
         searchFragment = new SearchFragment();
         diskFragment = new DiskFragment();
+        portflioFragment = new PortflioFragment();
+
         fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.add(R.id.frame_layout, scheduleFragment);
         fragmentTransaction.commit();

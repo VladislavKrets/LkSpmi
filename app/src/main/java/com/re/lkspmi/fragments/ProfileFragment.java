@@ -1,4 +1,4 @@
-package com.re.lkspmi;
+package com.re.lkspmi.fragments;
 
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -6,13 +6,15 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.re.lkspmi.utils.LkSingleton;
+import com.re.lkspmi.R;
 
 import java.io.File;
 import java.io.FileInputStream;

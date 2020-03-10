@@ -1,4 +1,4 @@
-package com.re.lkspmi;
+package com.re.lkspmi.fragments;
 
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -7,8 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -27,49 +25,48 @@ import android.widget.TextView;
 
 import com.github.florent37.expansionpanel.ExpansionHeader;
 import com.github.florent37.expansionpanel.ExpansionLayout;
+import com.re.lkspmi.utils.LkSingleton;
+import com.re.lkspmi.R;
 
 import java.io.IOException;
-import java.io.Serializable;
-import java.util.concurrent.ExecutionException;
+import java.util.List;
 
-import ru.spmi.lk.authorization.LkSpmi;
-import ru.spmi.lk.entities.rup.Rup;
-import ru.spmi.lk.entities.rup.RupSemester;
-import ru.spmi.lk.entities.rup.RupSemesterSection;
-import ru.spmi.lk.entities.rup.RupSemesterSectionTerm;
+import ru.spmi.lk.entities.marks.Mark2;
+import ru.spmi.lk.entities.marks.Mark2Semester;
+import ru.spmi.lk.entities.marks.Mark2SemesterData;
 
-public class RupFragment extends Fragment implements Serializable {
+public class MarksFragment extends Fragment {
     private View view;
     private boolean isDestroyed = false;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.rup_fragment, null);
+        view = inflater.inflate(R.layout.marks_fragment, null);
         isDestroyed = false;
-        new RupTask().execute();
+        new MarksTask().execute();
         return view;
     }
+    private void initialize(List<Mark2> marks){
+        LinearLayout linearLayout = view.findViewById(R.id.marks_container);
+        ExpansionHeader expansionHeader;
+        ExpansionLayout expansionLayout;
+        if (marks != null){
+            for (Mark2 mark : marks){
 
-    private void initialize(RupSemester[] semesters) {
+                for (Mark2Semester semester : mark.getSemesters()){
+                    expansionHeader = createExpansionHeader(String.valueOf(mark.getYear())
+                            + "/" + String.valueOf(mark.getYear() + 1) + " " + semester.getSemester() + " семестр");
+                    expansionLayout = createExpansionLayout(semester);
+                    linearLayout.addView(expansionHeader);
+                    linearLayout.addView(expansionLayout);
+                    expansionHeader.setExpansionLayout(expansionLayout);
+                }
 
-
-        LinearLayout linearLayout = view.findViewById(R.id.dynamicLayoutController);
-        if (semesters != null) {
-            ExpansionHeader expansionHeader;
-            ExpansionLayout expansionLayout;
-            for (RupSemester semester : semesters) {
-                expansionHeader = createExpansionHeader(semester.getSemester() + " семестр");
-                expansionLayout = createExpansionLayout(semester);
-                linearLayout.addView(expansionHeader);
-                linearLayout.addView(expansionLayout);
-                expansionHeader.setExpansionLayout(expansionLayout);
             }
         }
-
     }
-
-    private ExpansionLayout createExpansionLayout(RupSemester semester) {
+    private ExpansionLayout createExpansionLayout(Mark2Semester semester) {
         final ExpansionLayout expansionLayout = new ExpansionLayout(getContext());
         ScrollView scrollView = new ScrollView(getContext());
         expansionLayout.addView(scrollView);
@@ -93,47 +90,25 @@ public class RupFragment extends Fragment implements Serializable {
                 6,
                 r.getDisplayMetrics()
         );
-        String[] lines = new String[]{"Дисциплина", "Часы", "Лекции", "Лаб.", "Практ.", "Сам. раб.", "Вид контроля"};
+        String[] lines = new String[] {"Дисциплина", "Вид контроля", "Часы", "Дата", "Преподаватель", "Результат"};
 
-        for (String s : lines) {
+        for (String s : lines){
             addRowItem(row, layoutParams, px, s);
         }
         tableLayout.addView(row);
-        RupSemesterSection[] sections = semester.getSections();
 
-        StringBuilder examBuilder;
-        for (RupSemesterSection rupSection : sections) {
-            if (rupSection.getType().equals("subject")) {
-                examBuilder = new StringBuilder();
-                row = new TableRow(getContext());
-                addRowItem(row, layoutParams, px, rupSection.getTitle());
-                addRowItem(row, layoutParams, px, String.valueOf(rupSection.getHours()));
+        Mark2SemesterData[] semesterData = semester.getData();
 
-                for (RupSemesterSectionTerm term : rupSection.getTerms()) {
-                    if (term.getNum() == semester.getSemester()) {
-                        addRowItem(row, layoutParams, px, term.getLections() == null ? "0" : term.getLections().toString());
-                        addRowItem(row, layoutParams, px, term.getLabs() == null ? "0" : term.getLabs().toString());
-                        addRowItem(row, layoutParams, px, term.getPractice() == null ? "0" : term.getPractice().toString());
-                        addRowItem(row, layoutParams, px, term.getSelf() == null ? "0" : term.getSelf().toString());
-                        if (term.getExam() != null) examBuilder.append("Экзамен[")
-                                .append(term.getExam().toString()).append("], ");
-                        if (term.getTest() != null) examBuilder.append("Зачет[")
-                                .append(term.getTest().toString()).append("], ");
-                        if (term.getTestdif() != null) examBuilder.append("Диф. зачет[")
-                                .append(term.getTestdif().toString()).append("], ");
-                        if (term.getKr() != null) examBuilder.append("Курсовая работа[")
-                                .append(term.getKr().toString()).append("], ");
-                        if (term.getKp() != null) examBuilder.append("Курсовой проект[")
-                                .append(term.getKp().toString()).append("], ");
-                        addRowItem(row, layoutParams, px, examBuilder.substring(0,
-                                examBuilder.length() - 2 > 0 ? examBuilder.length() - 2 : 0));
-                        break;
-                    }
-                }
-                tableLayout.addView(row);
-            }
+        for (Mark2SemesterData semesterSection : semesterData){
+            row = new TableRow(getContext());
+            addRowItem(row, layoutParams, px, semesterSection.getSubject());
+            addRowItem(row, layoutParams, px, semesterSection.getControlType());
+            addRowItem(row, layoutParams, px, semesterSection.getHours());
+            addRowItem(row, layoutParams, px, semesterSection.getDate());
+            addRowItem(row, layoutParams, px, semesterSection.getLecturers());
+            addRowItem(row, layoutParams, px, semesterSection.getMarkTitle());
+            tableLayout.addView(row);
         }
-
         return expansionLayout;
     }
 
@@ -186,33 +161,32 @@ public class RupFragment extends Fragment implements Serializable {
         expansionHeader.setExpansionHeaderIndicator(expansionIndicator);
         return expansionHeader;
     }
-
-    private int dpToPx(int dp) {
+    private int dpToPx(int dp){
         Resources r = getContext().getResources();
         float px = TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
                 6,
                 r.getDisplayMetrics()
         );
-        return (int) px;
+        return (int)px;
     }
 
-    class RupTask extends AsyncTask<Void, Void, RupSemester[]> {
+    class MarksTask extends AsyncTask<Void, Void, List<Mark2>>{
         ProgressBar progressBar;
         RelativeLayout relativeLayout;
 
-        public RupTask() {
+        public MarksTask() {
             relativeLayout = null;
         }
 
-        public RupTask(RelativeLayout relativeLayout) {
+        public MarksTask(RelativeLayout relativeLayout) {
             this.relativeLayout = relativeLayout;
         }
 
         @Override
         protected void onPreExecute() {
             if (relativeLayout == null) {
-                LinearLayout linearLayout = view.findViewById(R.id.rup_layout);
+                LinearLayout linearLayout = view.findViewById(R.id.marks_layout);
                 relativeLayout = new RelativeLayout(getContext());
                 RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
                         RelativeLayout.LayoutParams.MATCH_PARENT);
@@ -227,28 +201,26 @@ public class RupFragment extends Fragment implements Serializable {
                 progressBar.setVisibility(View.VISIBLE);
             }
         }
-
         @Override
-        protected RupSemester[] doInBackground(Void... voids) {
+        protected List<Mark2> doInBackground(Void... voids) {
             try {
-
-                RupSemester[] semesters = LkSingleton.getInstance().getLkSpmi().getRup().getSemesters();
-                return semesters;
+                List<Mark2> marks = LkSingleton.getInstance().getLkSpmi().getMarks();
+                return marks;
             } catch (IOException e) {
             }
             return null;
         }
 
-
         @Override
-        protected void onPostExecute(RupSemester[] semesters) {
+        protected void onPostExecute(List<Mark2> marks) {
             if (!isDestroyed) {
-                if (semesters != null) {
-                    LinearLayout linearLayout = view.findViewById(R.id.rup_layout);
+                if (marks != null) {
+                    LinearLayout linearLayout = view.findViewById(R.id.marks_layout);
                     linearLayout.removeView(relativeLayout);
-                    initialize(semesters);
-                } else {
-                    new RupTask(relativeLayout).execute();
+                    initialize(marks);
+                }
+                else {
+                    new MarksTask(relativeLayout).execute();
                 }
             }
         }

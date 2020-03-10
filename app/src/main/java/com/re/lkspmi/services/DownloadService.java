@@ -1,4 +1,4 @@
-package com.re.lkspmi;
+package com.re.lkspmi.services;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -7,7 +7,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -16,11 +15,11 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.FileProvider;
 import android.widget.Toast;
 
+import com.re.lkspmi.utils.LkSingleton;
+import com.re.lkspmi.R;
+
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-
-import ru.spmi.lk.authorization.LkSpmi;
 
 public class DownloadService extends Service {
     public DownloadService() {

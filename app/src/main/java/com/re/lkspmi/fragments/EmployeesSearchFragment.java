@@ -1,4 +1,4 @@
-package com.re.lkspmi;
+package com.re.lkspmi.fragments;
 
 import android.content.Intent;
 import android.content.res.Resources;
@@ -16,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -29,6 +28,10 @@ import android.widget.TextView;
 import com.github.florent37.expansionpanel.ExpansionHeader;
 import com.github.florent37.expansionpanel.ExpansionLayout;
 import com.google.gson.Gson;
+import com.re.lkspmi.EmployeeUserActivity;
+import com.re.lkspmi.utils.LkSingleton;
+import com.re.lkspmi.MainActivity;
+import com.re.lkspmi.R;
 import com.re.lkspmi.adapters.SearchEmployeesAdapter;
 
 import java.io.IOException;

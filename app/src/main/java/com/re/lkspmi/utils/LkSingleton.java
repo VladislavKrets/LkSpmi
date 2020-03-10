@@ -1,4 +1,4 @@
-package com.re.lkspmi;
+package com.re.lkspmi.utils;
 
 import ru.spmi.lk.authorization.LkSpmi;
 import ru.spmi.lk.entities.profile.ProfileCurrent;

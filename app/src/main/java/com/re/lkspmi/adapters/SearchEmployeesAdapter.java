@@ -13,7 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.re.lkspmi.LkSingleton;
+import com.re.lkspmi.utils.LkSingleton;
 import com.re.lkspmi.R;
 
 import java.io.File;
@@ -25,7 +25,6 @@ import java.util.List;
 
 import ru.spmi.lk.authorization.LkSpmi;
 import ru.spmi.lk.entities.search.employees.EmployeeSearchResponseItem;
-import ru.spmi.lk.entities.search.students.StudentsSearchResponseItem;
 
 public class SearchEmployeesAdapter extends BaseAdapter {
 
